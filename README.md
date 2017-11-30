@@ -1,8 +1,17 @@
 #   GoLang Bootcamp
 
+**Before to start**:
+## **Environment Setup**:
+* [Download golang!](https://www.youtube.com/watch?v=nbkjGixXnlI&index=1&list=PL2ANXDJvvFeJLRIL_8NZl5LGtrRE3sE_E)
+* [Setting up the environment](https://www.youtube.com/watch?v=FTDOW8UbKjQ&list=PL2ANXDJvvFeJLRIL_8NZl5LGtrRE3sE_E&index=2)
+* Chose an IDE.. [Microsoft Visual Studio Code](https://code.visualstudio.com/) or [Atom](https://atom.io/)
+* [Go for impatiens](https://www.youtube.com/watch?v=CF9S4QZuV30&t=1585s)
+* [First program!](https://gobyexample.com/hello-world)
+* [GIT!](https://try.github.io/levels/1/challenges/1)
+
 **Week 1**:
 ## **Golang Fundamentals**:
-* Types Systems and Type Casting
+* Native Types and Type Casting
 * Array, Maps, Slice
 * Structures, Methods and Interfaces
 * Pointers
@@ -108,3 +117,4 @@
 ### Go-Kit oriented application: (need to decide application context)
     - [Application Overview]
 ---
+
