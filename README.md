@@ -1,6 +1,6 @@
 #   GoLang Bootcamp
 
-**Week 1**:
+**Week 1**: Novice to Beginner
 ## **Golang Fundamentals**:
 * Types Systems and Type Casting
 * Array, Maps, Slice
@@ -27,7 +27,7 @@
 
 ---
 
-**Week 2**:
+**Week 2**: Intermediate
 
 ## **Web Application Development**:
 * Important Packages
@@ -40,12 +40,17 @@
 **Assignments**
 
 2.1.    Create an REST application communicate to DB and would serve content on GET, POST, PUT and DELETE oprations.
+TIP: 
+*   For efficient request routing instead of net/http package you can use [gorilla/mux](https://github.com/gorilla/mux).
+*   Database accessing [model](http://www.alexedwards.net/blog/organising-database-access) structure.
+*   https://semaphoreci.com/community/tutorials/building-and-testing-a-rest-api-in-go-with-gorilla-mux-and-postgresql
 
 2.2 Add Middleware layer for authentication, Routing filtration and Error handling
 
+
 ---
 
-**Week 3**:
+**Week 3**: Expertise
 ## **Microservice oriented architectural components**:
 
 1. [Service Discovery](###Service-Discovery)
@@ -96,15 +101,34 @@
 
 ---
 
-**Week 4**
+**Week 4** Application Development
 
-## **Build Enterprise ready application**
+## **Build Enterprise ready Cloud Native Application**
 
 ## Application 1:
 ### Distributed Remote Command Executor:-
-    - [Application Overview]
+
+**Purpose:** Create an distributed client-server application to facilitate system data (per second) retrival for monitoring and Provide UI interface to invoke defined set of Linux commands on target machines for on demand data retrival.
+
+> We will be creating REST API interface, UI Dashboard, clients, server and data pipeline. Every component is independent and replaceable with respective alternate solution. Client can publish monitoring matrices/data to pipeline. Pipeline would retain data untill consumed by consumers. Single or Clustered Servers would subscribe to clients's data on pipeline and guarentees that data is consumed atleast ones by group of servers. It is the responsibility of server to analyse, process, tag consumed data and send it for persistent storage. REST API interface would allow us to retrieve data from database or retrive on-demand data from target machines and visualize on dashboard/ UI.
+
+![alt text][RemoteCommander]
+
+Knowledge Coverage:
+
+-   Dashboard Development & Operations
+    -   REST API Development
+    -   Middleware for authentication, logging, distributed tracing, application metrices
+-   Creating Server Development and Operation
+    -   NATS Server
+    -   Load Balanced Microservices
+-   Creating Clients
+    -   Golang Fundamentals and Language Intermediate experience
+    -   NATS Client creation involving microservice development knowledge
 
 ## Application 2:
 ### Go-Kit oriented application: (need to decide application context)
     - [Application Overview]
 ---
+
+[RemoteCommander]: docs/img/RemoteCommander.png "Remote Commander"
