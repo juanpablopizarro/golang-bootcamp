@@ -1,8 +1,23 @@
 #   GoLang Bootcamp
 
+<<<<<<< HEAD
 **Week 1**: Novice to Beginner
 ## **Golang Fundamentals**:
 * Types Systems and Type Casting
+=======
+**Before to start**:
+## **Environment Setup**:
+* [Download golang!](https://www.youtube.com/watch?v=nbkjGixXnlI&index=1&list=PL2ANXDJvvFeJLRIL_8NZl5LGtrRE3sE_E)
+* [Setting up the environment](https://www.youtube.com/watch?v=FTDOW8UbKjQ&list=PL2ANXDJvvFeJLRIL_8NZl5LGtrRE3sE_E&index=2)
+* Chose an IDE.. [Microsoft Visual Studio Code](https://code.visualstudio.com/) or [Atom](https://atom.io/)
+* [Go for impatiens](https://www.youtube.com/watch?v=CF9S4QZuV30&t=1585s)
+* [First program!](https://gobyexample.com/hello-world)
+* [GIT!](https://try.github.io/levels/1/challenges/1)
+
+**Week 1**:
+## **Golang Fundamentals**:
+* Native Types and Type Casting
+>>>>>>> 764938489fc8054076c96e100aebc7e47456a79f
 * Array, Maps, Slice
 * Structures, Methods and Interfaces
 * Pointers
@@ -27,7 +42,11 @@
 
 ---
 
+<<<<<<< HEAD
 **Week 2**: Intermediate
+=======
+**Week 2**:
+>>>>>>> 764938489fc8054076c96e100aebc7e47456a79f
 
 ## **Web Application Development**:
 * Important Packages
@@ -40,6 +59,7 @@
 **Assignments**
 
 2.1.    Create an REST application communicate to DB and would serve content on GET, POST, PUT and DELETE oprations.
+<<<<<<< HEAD
 TIP: 
 *   For efficient request routing instead of net/http package you can use [gorilla/mux](https://github.com/gorilla/mux).
 *   Database accessing [model](http://www.alexedwards.net/blog/organising-database-access) structure.
@@ -51,6 +71,14 @@ TIP:
 ---
 
 **Week 3**: Expertise
+=======
+
+2.2 Add Middleware layer for authentication, Routing filtration and Error handling
+
+---
+
+**Week 3**:
+>>>>>>> 764938489fc8054076c96e100aebc7e47456a79f
 ## **Microservice oriented architectural components**:
 
 1. [Service Discovery](###Service-Discovery)
@@ -100,6 +128,13 @@ TIP:
 3.3: -
 
 ---
+
+**Week 4**
+
+## **Build Enterprise ready application**
+
+## Application 1:
+### Distributed Remote Command Executor:-
 
 **Week 4** Application Development
 
