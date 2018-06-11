@@ -1,8 +1,8 @@
-#   GoLang Bootcamp
+# Golang bootcamp
 
-**Before to start**:
-## **Environment Setup**:
-* [Download golang!](https://www.youtube.com/watch?v=nbkjGixXnlI&index=1&list=PL2ANXDJvvFeJLRIL_8NZl5LGtrRE3sE_E)
+## Setting up the environment
+First download and install Go, you can follow [this](https://www.youtube.com/watch?v=nbkjGixXnlI&index=1&list=PL2ANXDJvvFeJLRIL_8NZl5LGtrRE3sE_E) tutorial if you want or you can head over to the website and follow the [installation section](https://golang.org/doc/install).
+
 * [Setting up the environment](https://www.youtube.com/watch?v=FTDOW8UbKjQ&list=PL2ANXDJvvFeJLRIL_8NZl5LGtrRE3sE_E&index=2)
 * Chose an IDE.. [Microsoft Visual Studio Code](https://code.visualstudio.com/) or [Atom](https://atom.io/)
 * [Go for impatiens](https://www.youtube.com/watch?v=CF9S4QZuV30&t=1585s)
@@ -10,17 +10,10 @@
 * [GIT!](https://try.github.io/levels/1/challenges/1)
 
 **Week 1**:  Novice to Beginner
-## **Golang Fundamentals**:
-* Native Types and Type Casting
-* Array, Maps, Slice
-* Structures, Methods and Interfaces
-* Pointers
-* Error Handling and Logging
-* Concurrancy
-* Mutex
-* Testing
-* Package Management
-* Dependency Management
+## Golang fundamentals
+Before each code example you will find a link to a website called [GoPlay space](https://goplay.space) were you can run the code and look at the documentation of packages all in the same place.
+
+TODO: add content here or link to the file
 
 **Assignments**
 
