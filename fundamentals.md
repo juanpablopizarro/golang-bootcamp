@@ -1,6 +1,6 @@
 # Golang fundamentals
 
-### Types
+### Basic types
 Go has almost all the typical type values:
 ```
 bool
@@ -66,7 +66,7 @@ func main() {
 }
 ```
 
-#### Pointers
+### Pointers
 Go has pointers. A pointer in Go will hold the memory address of a value. The zero-value of pointers it's `nil`.  
 To declare a pointer to a type we use a syntax similar to C:
 ```golang
@@ -85,7 +85,7 @@ func main() {
 }
 ```
 
-#### Structs
+### Structs
 To group fields together Go defines `structs`, this structs are quite similar to those defined in the C language. They are defined with `type name struct`, each field it's going to have its own type and they can be initilized in different ways. For example([GoPlay](https://goplay.space/#x4njww69awl)):
 ```golang
 package main
@@ -147,7 +147,7 @@ func main() {
 }
  ```
 
-#### Arrays, slices and maps
+### Arrays, slices and maps
 In Go there is something that is often confusing to newcomers and that is the difference between arrays and slices.  
 Arrays are like you would think, a fixed size list of indexed values that all share the same type.  
 Slices are something a bit more interesting. The first difference would be that arrays have a fixed size, while slices are dynamically allocated. In practice you will probably always see slices instead of arrays.  
@@ -217,7 +217,7 @@ func main() {
 }
 ```
 
-#### Function types
+### Function types
 In Go, functions are first class citizens. This means that you can use functions as if they were like any other types(ints, string, what have you). In fact, along the standard library and many other packages you will find that lots and lots of function types. For example, in the `net/http` library there is a function type that is commonly used named [http.HandlerFunc](https://godoc.org/net/http#HandlerFunc) with a signature of `func (http.ResponseWriter, *http.Request)`.  
 To declare and use function types you can do something like this([GoPlay](https://goplay.space/#rZ4Z48yEykG)):
 ```golang
@@ -244,4 +244,169 @@ func someFunc(f func() error) error {
 }
 ```
 
-#### Interfaces
+### Methods
+Go, unlike objected oriented programming, does not have classes. But it does have methods that you can define on concrete types. This might seem a bit weird, but a method is just a function with a special *receiver*. This receiver can be of **any** type, ints, structs, strings and anything you can think of(they can be defined on function types too, cool inception right?).  
+Since the receiver can be of any type, it might hold a certain state. For example if I have a struct with two int fields then those two fields will be accessible from the methods I defined on top of that struct. If you want to modify those states and you want it to be reflected outside of the method you are going to have to define the receiver as a pointer receiver, this means that the receiver will hold the address of the state being manipulated. If we instead use value receivers then the methods will be operating on copies of the original values.  
+For convenience, Go will let us call the methods that have pointer receivers with a value, so that we don't have to type 3 extra characters(doing `v.Method()` instead of `(&v).Method()`).  
+Stop talking and show me the code([GoPlay](https://goplay.space/#sHBFKyoY5wf)):
+```golang
+package main
+
+import "fmt"
+
+type mstr string
+
+func (m *mstr) Hi() {
+	// print the value of the receiver
+	fmt.Printf("Hi %v\n", *m)
+}
+
+func main() {
+	// we can call hi using a value, go will translate to
+	// a memory address since that is what Hi expects as the
+	// receiver
+	name := mstr("Gopher")
+	name.Hi()
+
+	// we can call hi too when we have an actual memory address
+	otherName := &name
+	otherName.Hi()
+}
+```
+
+### Interfaces
+Interfaces allow us to group together functions with specific signatures specified by us. The value of interfaces can be any value that implements those methods.  
+In Go, interfaces are implemented implicitly. This there is no `implemetns` or anything like that. If a given type implements the functions specified by a given interface then that type will implement that interface without us saying anything.  
+Interfaces hold a value, which is a value of a specific underlying concrete type, and type which is the concrete type mentioned. One cool thing about interface values in Go is that they can be nil, so essentially you can call a method on a nil value that implements the interface and that will be fine, in other languages this will probably result in null pointer exceptions.  
+You might be wondering: well what happens if the interface has no methods? wouldn't any concrete type implement that interface?? ... Well you are right. The empty interface usually refered to as `interface{}` can hold values of any type. Is sometimes comes in handy when you are handling values of an unknown type. For example, in the `json` package of the standard library you have the [Encoder.Encode](https://godoc.org/encoding/json#Encoder.Encode) method that receives the data you want it to encode through an `interface{}` so can basically send everything to that method.  
+**BE CAREFUL** when using the empty interface, don't over use it, whenever you are defining the API for your library try to see if you can instead use a user-defined interface with methods that express the meaning of the types the API will handle.  
+When defining interfaces Go recommends to reduce the number of methods you put in that interface, since **the bigger the interface, the weaker the abstraction**.  
+That was a lot of text, is time for some code([GoPlay](https://goplay.space/#FNh0cTZqrTb)):
+```golang
+package main
+
+import "fmt"
+
+// Note the format. Typically one method interfaces have
+// a the name of the interface be the name of the method
+// + er. For example, the interface that has the method
+// Write is called Writer, in this case the method name
+// is greet so the interface will be called Greeter.
+type Greeter interface {
+	Greet(name string)
+}
+
+type str struct{}
+
+// str type implements the Greeter interface implicitly.
+func (str) Greet(name string) {
+	fmt.Printf("Hi %v\n", name)
+}
+
+func main() {
+	// s is of type str so it implements Greeter
+	s := str{}
+	s.Greet("gopher")
+
+	// whatType receives an empty interface so we can
+	// send whatever we want to the function
+	whatType(s)
+	whatType(3)
+	whatType("hi")
+
+	// greetAndBye expects a Greeter, so whatever type
+	// that implements the Greet(name string) method
+	// can be sent to this function
+	greetAndBye(s, "gopher")
+}
+
+func whatType(v interface{}) {
+	fmt.Printf("type of %v: %T\n", v, v)
+}
+
+func greetAndBye(g Greeter, name string) {
+	g.Greet(name)
+	fmt.Printf("Bye %v\n", name)
+}
+```
+
+#### Type assertions
+There is this thing that you can do with interfaces called type assertion. This provides access to an interface value's underlying concrete value. This basically means that given an interface you can extract the value of a specific type. For example([GoPlay](https://goplay.space/#jOqaZ9T9TlU)):
+```golang
+package main
+
+import "fmt"
+
+type Greeter interface {
+	Greet(name string)
+}
+
+type str struct{}
+
+func (str) Greet(name string) {
+	fmt.Printf("Hi %v\n", name)
+}
+
+func main() {
+	// s is of type str so it implements Greeter
+	s := str{}
+	s.Greet("gopher")
+	extract(s)
+}
+
+func extract(v interface{}) {
+	// if v holds a value of type str then greeter will
+	// have that value. If it does not then this will triger
+	// a panic
+	greeter := v.(str)
+	greeter.Greet("gopher1")
+
+	// instead of triggering a panic we can use a second
+	// variable that will hold a boolean specifying if v
+	// is of type str
+	gr, ok := v.(str)
+	if !ok {
+		fmt.Println("v is not of type str")
+		return
+	}
+	gr.Greet("gopher2")
+}
+```
+You might be wondering, what if we want to do type assertion with multiple types not just one? Well, go has you covered. You can use type switches([GoPlay](https://goplay.space/#pomXwCJ9XzA)):
+```golang
+package main
+
+import "fmt"
+
+type Greeter interface {
+	Greet(name string)
+}
+
+type str struct{}
+
+func (str) Greet(name string) {
+	fmt.Printf("Hi %v\n", name)
+}
+
+func main() {
+	// s is of type str so it implements Greeter
+	s := str{}
+	extract(s)
+	extract(2)
+	extract("hello")
+	extract(2.4)
+}
+
+func extract(v interface{}) {
+	switch t := v.(type) {
+	case str:
+		t.Greet("GOPHER")
+	case int:
+		fmt.Printf("sent an int: %v\n", t)
+	case string:
+		fmt.Printf("sent a string: %v\n", t)
+	default:
+		fmt.Printf("unsupported type: %T\n", t)
+	}
+}
+```
