@@ -276,7 +276,7 @@ func main() {
 
 ### Interfaces
 Interfaces allow us to group together functions with specific signatures specified by us. The value of interfaces can be any value that implements those methods.  
-In Go, interfaces are implemented implicitly. This there is no `implemetns` or anything like that. If a given type implements the functions specified by a given interface then that type will implement that interface without us saying anything.  
+In Go, interfaces are implemented implicitely. This there is no `implements` or anything like that. If a given type implements the functions specified by a given interface then that type will implement that interface without us saying anything.  
 Interfaces hold a value, which is a value of a specific underlying concrete type, and type which is the concrete type mentioned. One cool thing about interface values in Go is that they can be nil, so essentially you can call a method on a nil value that implements the interface and that will be fine, in other languages this will probably result in null pointer exceptions.  
 You might be wondering: well what happens if the interface has no methods? wouldn't any concrete type implement that interface?? ... Well you are right. The empty interface usually refered to as `interface{}` can hold values of any type. Is sometimes comes in handy when you are handling values of an unknown type. For example, in the `json` package of the standard library you have the [Encoder.Encode](https://godoc.org/encoding/json#Encoder.Encode) method that receives the data you want it to encode through an `interface{}` so can basically send everything to that method.  
 **BE CAREFUL** when using the empty interface, don't over use it, whenever you are defining the API for your library try to see if you can instead use a user-defined interface with methods that express the meaning of the types the API will handle.  
@@ -298,7 +298,7 @@ type Greeter interface {
 
 type str struct{}
 
-// str type implements the Greeter interface implicitly.
+// str type implements the Greeter interface implicitely.
 func (str) Greet(name string) {
 	fmt.Printf("Hi %v\n", name)
 }
