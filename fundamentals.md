@@ -1,5 +1,8 @@
 # Golang fundamentals
 
+### Packages
+In Go, programs are structured using packages.
+
 ### Basic types
 Go has almost all the typical type values:
 ```
@@ -610,3 +613,125 @@ func someFunc(done <-chan bool) {
 	// do work
 }
 ```
+
+Closing a channel indicates that no more values will be sent on it. This can sometimes be useful to indicate a completion to the ones that are receiving from it. Reading from a closed channel does not return error, it returns the zero-value of the type of the channel. So if you have declared a channel of strings and you read from it after closing it you will get all empty strings. If you are using structs then the zero-value will be nil.  
+This allows us to use the `for range` structure to iterate over the values of the channel until the channel is closed. The next example will cover this use cases([GoPlay](https://goplay.space/#WGVtmD3Ck5C)):
+```golang
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	messages := make(chan string, 2)
+	done := make(chan bool, 1)
+
+	go func() {
+		for {
+			// this double assignment allows us to check
+			// if the channel was closed or not
+			m, ok := <-messages
+			if !ok {
+				// if ok is false it means that we cannot
+				// receive from the channel so it was closed
+				fmt.Println("channel closed!")
+				// close the channel so that it sends the nil
+				// value which will make the last sentence
+				// of this program ends and the program exits
+				close(done)
+				return
+			}
+			fmt.Printf("received: %v\n", m)
+		}
+	}()
+	// wait before closing the channel
+	time.Sleep(2 * time.Second)
+	messages <- "hi"
+	messages <- "bye"
+	close(messages)
+	<-done
+}
+```
+
+Go provides us with a statemente called `select`. This statemente allows a goroutine to wait on multiple communications operations and perform an action whenever we receive something from any of the specified channels. Example([GoPlay](https://goplay.space/#xP74KERfHXl)):
+```golang
+package main
+
+import "time"
+import "fmt"
+
+func main() {
+	c1 := make(chan string)
+	c2 := make(chan string)
+
+	// Each channel will receive a value after some amount
+	// of time, to simulate e.g. blocking RPC operations
+	// executing in concurrent goroutines.
+	go func() {
+		time.Sleep(1 * time.Second)
+		c1 <- "one"
+	}()
+	go func() {
+		time.Sleep(2 * time.Second)
+		c2 <- "two"
+	}()
+
+	// We'll use `select` to await both of these values
+	// simultaneously, printing each one as it arrives.
+	for i := 0; i < 2; i++ {
+		select {
+		case msg1 := <-c1:
+			fmt.Println("received", msg1)
+		case msg2 := <-c2:
+			fmt.Println("received", msg2)
+		}
+	}
+}
+```
+**Exercise:** go to [Go tour binary tree exercise](https://tour.golang.org/concurrency/7) and implement what it's requested
+
+You've seen that channels are great for communicating between different goroutines, we can even use it for synchronization. But what if we want to guard a variable so that only one goroutine can access it at the same time. It would be quite cumbersome to implement a solution using only channels. Well, go is nice again and provides us with a library called `sync` that has a bunch of utilities that are useful for doing mutual exclusion using a generally refered to as `mutex`. This example was takend from the GoTour([GoPlay](https://goplay.space/#7L8oJihNE1G)):
+```golang
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+// SafeCounter is safe to use concurrently.
+type SafeCounter struct {
+	v   map[string]int
+	mux sync.Mutex
+}
+
+// Inc increments the counter for the given key.
+func (c *SafeCounter) Inc(key string) {
+	c.mux.Lock()
+	// Lock so only one goroutine at a time can access the map c.v.
+	c.v[key]++
+	c.mux.Unlock()
+}
+
+// Value returns the current value of the counter for the given key.
+func (c *SafeCounter) Value(key string) int {
+	c.mux.Lock()
+	// Lock so only one goroutine at a time can access the map c.v.
+	defer c.mux.Unlock()
+	return c.v[key]
+}
+
+func main() {
+	c := SafeCounter{v: make(map[string]int)}
+	for i := 0; i < 1000; i++ {
+		go c.Inc("somekey")
+	}
+
+	time.Sleep(time.Second)
+	fmt.Println(c.Value("somekey"))
+}
+```
+**Exercise:** go to [Go tour web crawler exercise](https://tour.golang.org/concurrency/10) and implement what it's requested.
