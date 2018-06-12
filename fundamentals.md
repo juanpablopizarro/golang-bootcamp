@@ -188,7 +188,8 @@ func main() {
 	fmt.Println(fiveToSix)
 }
 ```
-To learn more about the usage of slices and how they work internally refer to [this blog post](https://blog.golang.org/go-slices-usage-and-internals).
+To learn more about the usage of slices and how they work internally refer to [this blog post](https://blog.golang.org/go-slices-usage-and-internals).  
+**Excercise:** Go to [Go Tour slices excercise](https://tour.golang.org/moretypes/18) and implement what it's requested there.
 
 Maps are basically like dictonaries in python or HashMaps in java. They map a key to a given value and let us access those values using the specified keys. The zero value of a map is going to be nil as with slices. Both keys and values can be of any given type, from structs to basic types to interfaces(which we will cover later). Much like slices, we can use `make` to create maps. Examples([GoPlay](https://goplay.space/#xjeZ48dknCc)):
 ```golang
@@ -216,6 +217,7 @@ func main() {
 	fmt.Printf("m[\"key3\"].boolField=%v\n", m["key3"].boolField)
 }
 ```
+**Exercise:** go to [Go tour maps excercise](https://tour.golang.org/moretypes/23) and implement what it's requested.
 
 ### Function types
 In Go, functions are first class citizens. This means that you can use functions as if they were like any other types(ints, string, what have you). In fact, along the standard library and many other packages you will find that lots and lots of function types. For example, in the `net/http` library there is a function type that is commonly used named [http.HandlerFunc](https://godoc.org/net/http#HandlerFunc) with a signature of `func (http.ResponseWriter, *http.Request)`.  
@@ -243,6 +245,7 @@ func someFunc(f func() error) error {
 	return f()
 }
 ```
+**Exercise:** go to [Go tour closure exercise](https://tour.golang.org/moretypes/26) and implement what it's requested.
 
 ### Methods
 Go, unlike objected oriented programming, does not have classes. But it does have methods that you can define on concrete types. This might seem a bit weird, but a method is just a function with a special *receiver*. This receiver can be of **any** type, ints, structs, strings and anything you can think of(they can be defined on function types too, cool inception right?).  
@@ -329,6 +332,9 @@ func greetAndBye(g Greeter, name string) {
 	fmt.Printf("Bye %v\n", name)
 }
 ```
+You are going to implement a solution to two different exercises that will show you interfaces from the standard library that are commonly used.  
+**Exercise:** go to [Go tour stringers exercise](https://tour.golang.org/methods/18) and implement what it's requested.  
+**Exercise:** go to [Go tour readers exercise](https://tour.golang.org/methods/22) and implement what it's requested.
 
 #### Type assertions
 There is this thing that you can do with interfaces called type assertion. This provides access to an interface value's underlying concrete value. This basically means that given an interface you can extract the value of a specific type. For example([GoPlay](https://goplay.space/#jOqaZ9T9TlU)):
@@ -408,5 +414,199 @@ func extract(v interface{}) {
 	default:
 		fmt.Printf("unsupported type: %T\n", t)
 	}
+}
+```
+
+### Errors
+Errors are something of great discussion in Golang, mainly because it is very different to what we typically use in languages like Java or Ruby. If you want to express an error in those languages you would create your own exception and give it a meaningful name and maybe a description. You would then need aditional control structures like `try..catch ` to handle those errors.  
+In Go we instead treat errors as simple values. For this we have the `error` type that is nothing more than an [interface with a single method](https://godoc.org/builtin#error):
+```golang
+type error interface {
+	Error() string
+}
+```
+In go, functions usually return errors so if something went wrong you simply check whether the error is nil or no. This means that whenever you build your own functions you should return whatever you want to return and an error, if nothing went wrong simply return nil, otherwise return an error that expresses the problem. You will see a lot of code that looks like this:
+```golang
+// Handling errors
+err := callFunc()
+if err != nil {
+	// handle the error in here
+}
+
+// Returning errors.
+// Return the data you want + an error
+func importantFunc() (string, error) {
+	s, err := importantOperation()
+	if err != nil {
+		return "", err
+	}
+	return s, nil
+}
+```
+**Exercise:** go to [Go tour error excercise](https://tour.golang.org/methods/20) and implement what it's requested.
+
+### Concurrency
+#### Goroutines
+If you heard of Go then you probably also heard that Go has a kick-ass native support for concurrency. It is extremely simple and very efficient.  
+For this Go uses the concept of *goroutines*, a goroutine is lightweight thread managed by the Go runtime. This means that in a single OS Thread we can have multiple goroutines, thousands if you want.  
+This goroutines run in the same address space so you will have to be careful when you are accessing data from multiple goroutines.  
+This shows a bit how you can use goroutines([GoPlay](https://goplay.space/#cRTTaMlqWj0)):
+```golang
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func importantFeature() {
+	fmt.Println("doing important work")
+}
+
+func main() {
+	importantFeature()
+
+	// you can spawn new goroutines with a simple
+	// go funcName
+	go importantFeature() // this now created a brand new goroutine
+
+	s := "inside goroutine"
+	// you can also spawn goroutines using an
+	// anonymous functions
+	go func(someString string) {
+		fmt.Println("printing from the goroutine")
+	}(s)
+
+	for i := 0; i < 5; i++ {
+		// we can spawn as many as we like. Try changing
+		// i<5 to something like i<1000
+		go func(i int) {
+			time.Sleep(5 * time.Millisecond)
+			fmt.Printf("i=%v\n", i)
+		}(i)
+	}
+	// wait a bit so that we don't exit immediately
+	// we need to wait so that at least some of the
+	// goroutines get executed. Go doesn't automatically
+	// wait for all goroutines, if we don't do synchronization
+	// then we will exit and goroutines won't finish executing.
+	time.Sleep(25 * time.Millisecond)
+}
+```
+
+#### Channels
+For communicating and synchronizing between different goroutines Go introduced the concept of *channels*. Channels are pipes that connect concurrent goroutines. You can send values from one goroutine and receive them from another. For example([GoPlay](https://goplay.space/#vteRsUOcf1w)):
+```golang
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	messages := make(chan string)
+
+	go func() {
+		time.Sleep(1 * time.Second)
+		// The information flows in the direction of the arrow
+		// In this case we are sending data into the messages
+		// channel
+		messages <- "hi from the goroutine"
+	}()
+
+	// now we are receiving the information that is sent to
+	// the channel.
+	// Note that this will block for a second until the
+	// channel has something we can receive.
+	m := <-messages
+	fmt.Println(m)
+}
+```
+In the comments we specified that the instruction `m := <-messages` will block until the channel has something we can read, so until the goroutine sends something to the messages channel that instruction will block the program there.  
+Receiving from a channel will *always* block, but sending to the channel may or may not block depending on how we initialize the channel. In the previous example we declared that channel as a synchronous channel, how did we do that? By not specifying a size when we created with `make`(line 9).  
+If we want to make an asynchronous channel, meaning that it will not block when we try to send something, then we need to declare a **buffered channel**. To create them you have to specify a size when you initialize it with `make`. For example([GoPlay](https://goplay.space/#5V-qhnN3zAs)):
+```golang
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	messages := make(chan string, 2)
+
+	// we send two messages that will make
+	// the channel full.
+	messages <- "hi"
+	messages <- "bye"
+
+	// spawn a new goroutine that will read
+	// from the channel after three seconds
+	go func() {
+		time.Sleep(3 * time.Second)
+		fmt.Println(<-messages)
+	}()
+
+	// if we try to add a message to the channel
+	// before one or all of the messages are consumed
+	// then the operation will block since there
+	// is no more space for that message to fit.
+	// So after the previous go routine reads, we
+	// will be able to send "hi again"
+	messages <- "hi again"
+
+	fmt.Println(<-messages)
+	fmt.Println(<-messages)
+}
+```
+We can do something similar to synchronize execution across goroutines. For example, we could use a blocking receive to wait until the goroutine is done executing([GoPlay](https://goplay.space/#-BGwwrmU1ve)):
+```golang
+package main
+
+import "fmt"
+import "time"
+
+// This is the function we'll run in a goroutine. The
+// `done` channel will be used to notify another
+// goroutine that this function's work is done.
+func worker(done chan bool) {
+	fmt.Print("working...")
+	time.Sleep(time.Second)
+	fmt.Println("done")
+
+	// Send a value to notify that we're done.
+	done <- true
+}
+
+func main() {
+
+	// Start a worker goroutine, giving it the channel to
+	// notify on.
+	done := make(chan bool, 1)
+	go worker(done)
+
+	// Block until we receive a notification from the
+	// worker on the channel.
+	<-done
+}
+```
+In the previous example we showed that you can send channels as parameters. What you can also do is specify the *direction* of the channel, this will limit the operations we can do. So essentialy we can say "this is a send only channel", "this a receive only channel" or "you can whatever you want, be free". Lets rewrite the previous example, note that inside the worker function we are only sending to the channel, so we can instead do the following:
+```golang
+func worker(done chan<- bool) {
+	fmt.Print("working...")
+	time.Sleep(time.Second)
+	fmt.Println("done")
+
+	// Send a value to notify that we're done.
+	done <- true
+}
+```
+If we wanted to send a receive only channel to a function we could do this:
+```golang
+// note the direction of the arrow
+func someFunc(done <-chan bool) {
+	// do work
 }
 ```
