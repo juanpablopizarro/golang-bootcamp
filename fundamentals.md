@@ -1,9 +1,163 @@
 # Golang fundamentals
 
 ### Packages
-In Go, programs are structured using packages.
+In Go, programs are structured using packages. The main function of a package should be in `package main`. If you create a project that does not have a package main then it means you are creating a library. Go's convetion says that the name of the package should match the last element of the import path. An import path is basically the path to the project from within your Go workspace.  
+Now that we are talking about imports, go gives us the statement `import "<path>"` to import a specific package either from the standard library or some package in our go workspace. Example([GoPlay](https://goplay.space/#bB6DC_CV-bF)):
+```golang
+package main
 
-### Basic types
+import (
+	"fmt"
+	"math"
+)
+
+func main() {
+	fmt.Println("Make the zero value useful.")
+
+	fmt.Printf("Square root of 8: %v\n", math.Sqrt(8))
+}
+```
+
+#### Exporting names
+If you've used Java then you probably already had fun with those endless method definitions, I'm talking about you `public static void main`.  
+Go has no *specific* access modifiers like public or private. In Go, names are either package-level or public. And you do this by making the first letter of the name be a capital letter. When you import a package you can only refer to those names that start with a capital letter. For example([GoPlay](https://goplay.space/#CrFk7n7AWd6)):
+```golang
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+func main() {
+	// Run this and you will get an error. After that
+	// change the pi to be Pi and see what happens.
+	fmt.Println(math.pi)
+
+}
+```
+
+### Functions
+Functions in Go can take any number of arguments and return any number of results. The typical model in Go is to return the results you want plus an error, but we'll cover errors later.  
+The return values of a function may be named, if so then Go will treat them as local variables to the scope of the function.  Example([GoPlay](https://goplay.space/#xPmMJhUXExA)):
+```golang
+package main
+
+import "fmt"
+
+// declare x and y as named return results
+func split(sum int) (x, y int) {
+	x = sum * 4 / 9
+	y = sum - x
+	return
+}
+
+func main() {
+	fmt.Println(split(17))
+}
+```
+Something interesting that Go has are variadic functions. This functions can be called with any number of trailing arguments. An example from the standard library may be [fmt.Println](https://golang.org/src/fmt/print.go?s=7595:7644#L253).  
+Here is an example that will illustrate all this([GoPlay](https://goplay.space/#9xI5pni7y-g)):
+```golang
+package main
+
+import "fmt"
+
+// Here's a function that will take an arbitrary number
+// of `int`s as arguments.
+func sum(nums ...int) {
+	fmt.Print(nums, " ")
+	total := 0
+	for _, num := range nums {
+		total += num
+	}
+	fmt.Println(total)
+}
+
+func main() {
+	// Variadic functions can be called in the usual way
+	// with individual arguments.
+	sum(1, 2)
+	sum(1, 2, 3)
+
+	// If you already have multiple args in a slice,
+	// apply them to a variadic function using
+	// `func(slice...)` like this.
+	nums := []int{1, 2, 3, 4}
+	sum(nums...)
+}
+```
+
+### Flow control statements
+#### For
+Go gives us only one looping construct, the `for` loop. This means we don't have a while, or a repeat until or anything like that.  
+For loops have a basic structure similar to the one used at C, except we don't use parenthesis, they will actually be a compilation error:
+```golang
+for i := 0; i < 2; i++ {
+	// code
+}
+```
+The first and last part of the for can be optional, meaning that we can only use the evaluation part and we basically have a while like so:
+```golang
+for i != 4 {
+	// do some stuff
+}
+```
+But you can also omit everything and you'll have an endless loop.
+
+#### If
+If statements, like for, does not used parenthesis. We can start if statements with a statement to execute before the condition, for example:
+```golang
+if err := funcReturnsError(); err != nil {
+	// very important stuff
+}
+```
+We also have an `else` and can concatenate it with another if like `} else if <condition> {`.
+
+#### Switch
+A switch statement is a shorter way to write a sequence of if - else statements. It runs the first case whose value is equal to the condition expression. Go's switch is like the one in C, C++, Java, JavaScript, and PHP, except that Go only runs the selected case, not all the cases that follow. This means we don't need that ugly break statement at the end of each case like in the mentioned languages. Another important difference is that Go's switch cases need not be constants, and the values involved need not be integers. For example([GoPlay](https://goplay.space/#SIsdHJKlgxe))
+```golang
+package main
+
+import (
+	"fmt"
+	"runtime"
+)
+
+func main() {
+	fmt.Print("Go runs on ")
+	switch os := runtime.GOOS; os {
+	case "darwin":
+		fmt.Println("macOS.")
+	case "linux":
+		fmt.Println("Linux.")
+	default:
+		fmt.Printf("%s.", os)
+	}
+}
+```
+You could also write a switch case with no condition, providing a cleaner way to write long if-else chains.
+
+#### Defer
+Defer is something that gets used a lot in Go. This statements defers the execution of the function until the surrounding function returns. The arguments that it receives are evaluated immediately but the function does not get executed until the surrounding function returns.  
+Deferred function calls get pushed into a call stack. When a function returns the go runtime will pop each of the deferred functions and execute them(it's a LIFO structure). Example([GoPlay](https://goplay.space/#6hzIT6lIo5F)):
+```golang
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("counting")
+
+	for i := 0; i < 10; i++ {
+		defer fmt.Println(i)
+	}
+
+	fmt.Println("done")
+}
+```
+
+### Variables and types
 Go has almost all the typical type values:
 ```
 bool
@@ -282,7 +436,7 @@ func main() {
 
 ### Interfaces
 Interfaces allow us to group together functions with specific signatures specified by us. The value of interfaces can be any value that implements those methods.  
-In Go, interfaces are implemented implicitely. This there is no `implements` or anything like that. If a given type implements the functions specified by a given interface then that type will implement that interface without us saying anything.  
+In Go, interfaces are implemented implicitly. This there is no `implements` or anything like that. If a given type implements the functions specified by a given interface then that type will implement that interface without us saying anything.  
 Interfaces hold a value, which is a value of a specific underlying concrete type, and type which is the concrete type mentioned. One cool thing about interface values in Go is that they can be nil, so essentially you can call a method on a nil value that implements the interface and that will be fine, in other languages this will probably result in null pointer exceptions.  
 You might be wondering: well what happens if the interface has no methods? wouldn't any concrete type implement that interface?? ... Well you are right. The empty interface usually refered to as `interface{}` can hold values of any type. Is sometimes comes in handy when you are handling values of an unknown type. For example, in the `json` package of the standard library you have the [Encoder.Encode](https://godoc.org/encoding/json#Encoder.Encode) method that receives the data you want it to encode through an `interface{}` so can basically send everything to that method.  
 **BE CAREFUL** when using the empty interface, don't over use it, whenever you are defining the API for your library try to see if you can instead use a user-defined interface with methods that express the meaning of the types the API will handle.  
@@ -304,7 +458,7 @@ type Greeter interface {
 
 type str struct{}
 
-// str type implements the Greeter interface implicitely.
+// str type implements the Greeter interface implicitly.
 func (str) Greet(name string) {
 	fmt.Printf("Hi %v\n", name)
 }
