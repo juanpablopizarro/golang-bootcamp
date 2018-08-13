@@ -29,17 +29,13 @@ Before each code example you will find a link to a website called [GoPlay space]
 
 Ok, head over to [Golang fundamentals](https://github.com/juanpablopizarro/golang-bootcamp/blob/master/fundamentals.md) to get started!
 
-**Assignments**
+### Assignment
 
-1.1. Create blabla1 script (Demonstrate implementor to interface).
+You are going to be implementing an in-memory database with persistence on files. You'll be working on this database through out the week, the excercise is divided into a few sections that will require you to implement the requested functionality before going to the next section.  
+Inside your `GOPATH` you will have the `src` directory, this directory may or may not have the `github.com` folder, if it doesn't go ahead and create it. Inside the `github.com` folder create a folder that matches your github username. Finally inside that folder create a new one called `
 
-1.2. Create blabla2 scripts (Demonstrate File Operations)
-
-1.3. Create blabla3 scripts (Demonstrate Concurrancy with Mutex, WaitGroup)
-
-1.4 Create blaBla script (Implement threadsafe map operation with mutex)
-
-1.5. Create blabla scripts (Demonstrate Testing of application)
+#### Interface definition
+When developing in Go often times you will start by defining an interface that will expose the methods of whatever it is you are implementing. In this case you are implementing a database, so think throughly of what methods you will need to implement, think what operations are tipically done on a database, do you need to open it or close it? Once you have the interface well defined you can start to code.
 
 ---
 
