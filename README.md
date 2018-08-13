@@ -2,7 +2,7 @@
 Get ready to read the word Go a lot!
 
 ## Introduction
-Go is a programming language built by Rob Pike, Robert Griesemer and Ken Thompson. It's a statically typed language with a gargabe collector and a kickass native concurrent-style programming model.
+Go is a new programming language built by Rob Pike, Robert Griesemer and Ken Thompson. It's a statically typed language with a gargabe collector and a kickass native concurrent-style programming model.
 
 Go is mainly about three things:
 * **Go is about composition**. It is *kind* of objected oriented just not in the usual way. There are no classes(but methods can be defined on any type), no subtype inheritance and interfaces are satisfied implicitly(we have structural typing). This results in simple pieces connected by small interfaces.
