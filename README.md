@@ -112,7 +112,7 @@ Go packages that *might* be useful for this:
 
 ### Concurrency
 Say you want to use this database in an HTTP server that you have running in production, this server is probably serving more than one request at a time. What happens if both requests try to use the DB to write some data into the same section of the map? You'll have a race condition which will cause your http server to panic. Panics are not good, that's why they are called panic. To avoid this you need to guard the operations that are done on the map using whatever Go provides for this. We talked about something that does this in the [Fundamentals section](https://github.com/juanpablopizarro/golang-bootcamp/blob/master/fundamentals.md#mutexes).  
-Once you've implemented that you should write a bit of code that would perform multiple operations on the DB at the same time(look into how the `testing.T.Run()` method works). Remember to run your tests with the `race` flag, this will allow the go runtime
+Once you've implemented that you should write a bit of code that would perform multiple operations on the DB at the same time(look into how the `testing.T.Run()` method works). Remember to run your tests with the `race` flag this will allow the go runtime to inspect whether your code has any race conditions.
 
 Useful reading and libraries:
 * [sync package](https://godoc.org/sync)
@@ -173,4 +173,6 @@ So, you need to change the in-memory DB used with a SQL and NoSQL local DBs. You
 
 
 ### Bonus track 
-If you have enough time, it would be nice to containerise your application using Docker
+If you have enough time, it would be nice to containerise your application and the DB using Docker and docker-compose.  
+Remember that Go is a compiled language, this allows us to build a single binary that we can just drop in whatever container/vm/machine we want. Take a look at the `docker scratch` image and see how it works. Also remember that with the Go compiler you can do cross compilation, say you are working on macOS and you want to compile something that would work on a linux machine that has the same processor architecture, you could then do something like this: `GOOS=linux go build`. To learn more about cross compilation you can red [this blog post](https://dave.cheney.net/2015/08/22/cross-compilation-with-go-1-5).  
+Once you have your application containerised you need to connect it to the DB. There are availabile images for both mongo and MySQL databases. If you are not familiar with `docker-compose` you can follow [this tutorial](https://docs.docker.com/compose/gettingstarted/) that explains a bit what it is and how to use it.
