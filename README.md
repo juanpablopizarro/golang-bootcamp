@@ -12,7 +12,7 @@ Go is mainly about three things:
 
 In fact, we even have our own website where we can [create our own Gophers](http://gopherize.me/). Thanks to Mat Ryer and Ashley McNamara for making this.
 
-##Part 1  (3 days)
+## Part 1  (3 days)
 ### Setting up the environment
 First download and install Go, you can follow [this video tutorial](https://www.youtube.com/watch?v=nbkjGixXnlI&index=1&list=PL2ANXDJvvFeJLRIL_8NZl5LGtrRE3sE_E) or you can head over to Go's website and follow the [installation section](https://golang.org/doc/install).  
 Now you need to setup the development environment. Go organizes the code in what it's called a `workspace`. [Here](https://golang.org/doc/code.html) is a tutorial from Go's website on how to set it up.
@@ -24,11 +24,9 @@ If you don't already know git then head over to [this tutorials](https://try.git
 [Here](https://vimeo.com/53221560) is a very good introductory talk given by Andrew Gerrand, one of the core Go team members.
 
 ### Golang fundamentals 
-In this section you will learn almost all the features that the Go language gives us. Along with a few of the sections you will find exercises to implement what was just shown.  
 Before each code example you will find a link to a website called [GoPlay space](https://goplay.space) were you can run the code and look at the documentation of packages all in the same place.
 
 Ok, head over to [Golang fundamentals](https://github.com/juanpablopizarro/golang-bootcamp/blob/master/fundamentals.md) to get started!
-
 
 ## Part 2 (2 days)
 
