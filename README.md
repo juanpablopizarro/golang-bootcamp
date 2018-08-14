@@ -12,7 +12,8 @@ Go is mainly about three things:
 
 In fact, we even have our own website where we can [create our own Gophers](http://gopherize.me/). Thanks to Mat Ryer and Ashley McNamara for making this.
 
-## Setting up the environment
+## Part 1  (3 days)
+### Setting up the environment
 First download and install Go, you can follow [this video tutorial](https://www.youtube.com/watch?v=nbkjGixXnlI&index=1&list=PL2ANXDJvvFeJLRIL_8NZl5LGtrRE3sE_E) or you can head over to Go's website and follow the [installation section](https://golang.org/doc/install).  
 Now you need to setup the development environment. Go organizes the code in what it's called a `workspace`. [Here](https://golang.org/doc/code.html) is a tutorial from Go's website on how to set it up.
 
@@ -22,21 +23,27 @@ If you don't already know git then head over to [this tutorials](https://try.git
 
 [Here](https://vimeo.com/53221560) is a very good introductory talk given by Andrew Gerrand, one of the core Go team members.
 
-**Week 1**:  Novice to Beginner
-## Golang fundamentals
-In this section you will learn almost all the features that the Go language gives us. Along with a few of the sections you will find exercises to implement what was just shown.  
+### Golang fundamentals 
 Before each code example you will find a link to a website called [GoPlay space](https://goplay.space) were you can run the code and look at the documentation of packages all in the same place.
 
 Ok, head over to [Golang fundamentals](https://github.com/juanpablopizarro/golang-bootcamp/blob/master/fundamentals.md) to get started!
 
+
+## Part 2 (2 days)
 **INFO**: Along the course you will encounter a few challenges that will ask you to implement a solution that it's "idiomatic go". It might be hard to pin-point what idiomatic go looks like, to help you with this here is a guide from the Go team called [Effective Go](https://golang.org/doc/effective_go.html). This guide highlight most of Go's good practices.
 
-### Assignment
+*Implement an in-memory DB.*
 
-You are going to be implementing an in-memory database with persistence on files. You'll be working on this database through out the week, the excercise is divided into a few sections that will require you to implement the requested functionality before going to the next section.  
-Inside your `GOPATH` you will have the `src` directory, this directory may or may not have the `github.com` folder, if it doesn't go ahead and create it. Inside the `github.com` folder create a folder that matches your github username. Finally inside that folder create a new one called `
+The requested in-memory DB is a persistence tool that allow us to store data in memory by responding to basic CRUD operations: 
+* Create
+* Retrieve
+* Update
+* Delete
 
-#### Interface definition
+You are going to be implementing this in-memory database with persistence on files too, later. You'll be working on this database through out the week, the excercise is divided into a few sections that will require you to implement the requested functionality before going to the next section.
+Inside your GOPATH you will have the src directory, this directory may or may not have the github.com folder, if it doesn't go ahead and create it. Inside the github.com folder create a folder that matches your github username. Finally inside that folder create a new one called `db`
+
+### Interface definition
 When developing in Go often times you will start by defining an interface that will expose the methods of whatever it is you are implementing. In this case you are implementing a database, so think throughly of what methods you will need to implement, think what operations are tipically done on a database, do you need to open it or close it? Once you have the interface well defined you can start to code.
 
 Here is a very good talk by Francesc Campoy explaining how interfaces work in Go and how they worked: [Understanding Go interfaces](https://www.youtube.com/watch?v=F4wUrj6pmSI)
@@ -89,7 +96,8 @@ Here are a couple of useful articles on how to perform testing in Go:
 * [Tips and tricks for writing unit tests in Go](https://medium.com/@matryer/5-simple-tips-and-tricks-for-writing-unit-tests-in-golang-619653f90742)
 * [Advanced testing techniques in Go](https://segment.com/blog/5-advanced-testing-techniques-in-go/)
 
-### File operations
+## Part 3 (3 days)
+### File I/O
 What happens when you stop the program you just wrote? Does the data persist on disk?  
 Right know we are storing everything in-memory so as soon as the program exits we loose all that data. How would you fix this? A simple approach would be to simply use files and dump all the data into a particular file as soon as the program finishes. You would also have to load all the data that a given file has when you are initializing your DB right?
 
@@ -100,6 +108,12 @@ Go packages that *might* be useful for this:
 * [os](https://godoc.org/os)
 * [bytes](https://godoc.org/bytes)
 
+Implement a new feature to the in-memory DB that:
+* Loads initial data from a local file
+* Dumps memory content to a local file when connection is closed
+
+*Note: it's not a need to dump data to file while DB session is open*
+
 ### Concurrency
 Say you want to use this database in an HTTP server that you have running in production, this server is probably serving more than one request at a time. What happens if both requests try to use the DB to write some data into the same section of the map? You'll have a race condition which will cause your http server to panic. Panics are not good, that's why they are called panic. To avoid this you need to guard the operations that are done on the map using whatever Go provides for this. We talked about something that does this in the [Fundamentals section](https://github.com/juanpablopizarro/golang-bootcamp/blob/master/fundamentals.md#mutexes).  
 Once you've implemented that you should write a bit of code that would perform multiple operations on the DB at the same time(look into how the `testing.T.Run()` method works). Remember to run your tests with the `race` flag, this will allow the go runtime
@@ -108,105 +122,59 @@ Useful reading and libraries:
 * [sync package](https://godoc.org/sync)
 * [Synchronizing state in golang](https://kylewbanks.com/blog/tutorial-synchronizing-state-with-mutexes-golang)
 
----
+## Part 4 - RESTFul
+### RESTFul Architectures
+If you are not familiar with REST, it would be necessary to get introduced into it:
+* [Intro to REST](https://www.youtube.com/watch?v=YCcAE2SCQ6k)
+* [REST Tutorial](https://www.restapitutorial.com/)
 
-**Week 2**: Intermediate
-
-## **Web Application Development**:
-* Important Packages
-* HTTP and other important package internals
-* Testing Web Application
-* Templating and Asset Management
-* Middleware (Routing, Authentication, Database)
-* File Operations
-
-**Assignments**
-
-2.1.    Create an REST application communicate to DB and would serve content on GET, POST, PUT and DELETE oprations.
-
-2.2 Add Middleware layer for authentication, Routing filtration and Error handling
-
----
-
-**Week 3**: Expertise
-## **Microservice oriented architectural components**:
-
-1. [Service Discovery](###Service-Discovery)
-1. [Service Monitoring](###Service-Monitoring)
-1. [Communication Protocols](###Communication-Protocols) (gRPC, RPC, TCP)
-1. [Error Handling](###Error-Handling)
-1. [Authentication](###Authentication)
-1. [Caching](###Caching)
-1. [Circuit Breaker](###Circuit-Breaker)
-1. [Rate Limiting](###Rate-Limiting)
-1. [Event Notification](###Event-Notification)
-1. [Reverse Proxy](###Reverse-Proxy)
-1. [Job Scheduler](###Job-Scheduler)
+In order to proceed you should have a good understanding of HTTP, and what RESTFul architectures are. 
 
 
-#### Service Discovery
-    [Description and important links]
-#### Communication Protocols (gRPC, RPC, TCP)
-    [Description and important links]
-#### Service Monitoring
-    [Description and important links]
-#### Error Handling
-    [Description and important links]
-#### Service Monitoring
-    [Description and important links]
-#### Authentication
-    [Description and important links]
-#### Caching
-    [Description and important links]
-#### Circuit Breaker
-    [Description and important links]
-#### Rate Limiting
-    [Description and important links]
-#### Event Notification
-    [Description and important links]
-#### Reverse Proxy
-    [Description and important links]
-#### Job Scheduler
-    [Description and important links]
+### REST API design (2 days)
+The exercise in this section it design a RESTFul API which exposes web services for managing a *Shopping Cart*. 
+The features needed are:
+* Create a new cart
+* Adding items to a cart
+* List all items of a specific cart 
+* Changing the quantity of an existent item in a cart 
+* Removing an item from a cart
+* Clear a specific cart (remove all items).
 
-**Assignments**: 
 
-3.1: Containerise load balanced application build in assignment 2.2
+**Note:** Available articles to be added to the shopping cart are provided by the following third party web service.
 
-3.2: -
+| Method   |      URL    | Desc |
+|----------|-------------|---   |
+| GET | http://challenge.getsandbox.com/articles | To get all available articles |
+| GET | http://challenge.getsandbox.com/articles/{articleId} | To get an specific artible by id. It returns `404` if the _articleId_ is not found |
+  
+**Important**: In order to consider an API well defined, you should consider a way to describe all the endpoints as much as possible, i.e.:
+* URIs with methods allowed 
+* headers, if needed
+* parameters (path and query params)
+* request & response bodys required with format type and expected values (payloads)
+* http statuses responses
 
-3.3: -
+### REST Impl (3 days)
+Once the API is defined, we are ready to implement it. 
+There are several way to implement it, you can choose 
+* Go Native: https://godoc.org/net/http
+* Gorilla mux: https://godoc.org/github.com/gorilla/mux
 
----
+You should also consider adding some integration testing for he implemented API, using https://godoc.org/net/http/httptest.
+Consider also taking a look at:
+* [unit testing HTTP servers](https://www.youtube.com/watch?v=hVFEV-ieeew) _(video)_
+* [Go Testing Technique: Testing JSON HTTP Requests](https://medium.com/@xoen/go-testing-technique-testing-json-http-requests-76d9ce0e11f)
 
-**Week 4** Application Development
 
-## **Build Enterprise ready Cloud Native Application**
+### DB (2 days)
+At this point the RESTFul API is already implemented and working fine, so, the next challenge is to change the persistence engine.
+So, you need to change the in-memory DB used with a SQL and NoSQL local DBs. You have to connect you application to a local **MongoDB** and **MySQL**
 
-## Application 1:
-### Distributed Remote Command Executor:-
+1. MongoDB: https://godoc.org/github.com/mongodb/mongo-go-driver/mongo
+2. MySQL: https://godoc.org/github.com/go-sql-driver/mysql
 
-**Purpose:** Create an distributed client-server application to facilitate system data (per second) retrival for monitoring and Provide UI interface to invoke defined set of Linux commands on target machines for on demand data retrival.
 
-> We will be creating REST API interface, UI Dashboard, clients, server and data pipeline. Every component is independent and replaceable with respective alternate solution. Client can publish monitoring matrices/data to pipeline. Pipeline would retain data untill consumed by consumers. Single or Clustered Servers would subscribe to clients's data on pipeline and guarentees that data is consumed atleast ones by group of servers. It is the responsibility of server to analyse, process, tag consumed data and send it for persistent storage. REST API interface would allow us to retrieve data from database or retrive on-demand data from target machines and visualize on dashboard/ UI.
-
-![alt text][RemoteCommander]
-
-Knowledge Coverage:
-
--   Dashboard Development & Operations
-    -   REST API Development
-    -   Middleware for authentication, logging, distributed tracing, application metrices
--   Creating Server Development and Operation
-    -   NATS Server
-    -   Load Balanced Microservices
--   Creating Clients
-    -   Golang Fundamentals and Language Intermediate experience
-    -   NATS Client creation involving microservice development knowledge
-
-## Application 2:
-### Go-Kit oriented application: (need to decide application context)
-    - [Application Overview]
----
-
-[RemoteCommander]: docs/img/RemoteCommander.png "Remote Commander"
+### Bonus track 
+If you have enough time, it would be nice to containerise your application using Docker
