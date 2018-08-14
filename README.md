@@ -29,6 +29,8 @@ Before each code example you will find a link to a website called [GoPlay space]
 
 Ok, head over to [Golang fundamentals](https://github.com/juanpablopizarro/golang-bootcamp/blob/master/fundamentals.md) to get started!
 
+**INFO**: Along the course you will encounter a few challenges that will ask you to implement a solution that it's "idiomatic go". It might be hard to pin-point what idiomatic go looks like, to help you with this here is a guide from the Go team called [Effective Go](https://golang.org/doc/effective_go.html). This guide highlight most of Go's good practices.
+
 ### Assignment
 
 You are going to be implementing an in-memory database with persistence on files. You'll be working on this database through out the week, the excercise is divided into a few sections that will require you to implement the requested functionality before going to the next section.  
@@ -36,6 +38,75 @@ Inside your `GOPATH` you will have the `src` directory, this directory may or ma
 
 #### Interface definition
 When developing in Go often times you will start by defining an interface that will expose the methods of whatever it is you are implementing. In this case you are implementing a database, so think throughly of what methods you will need to implement, think what operations are tipically done on a database, do you need to open it or close it? Once you have the interface well defined you can start to code.
+
+Here is a very good talk by Francesc Campoy explaining how interfaces work in Go and how they worked: [Understanding Go interfaces](https://www.youtube.com/watch?v=F4wUrj6pmSI)
+
+### Maps
+This is an in-memory database which means that all the data will be kept in some data structure during program execution. Since what you are storing is `key`-`value` pairs you could use golang's builtin `map` structure. If you don't remember how they worked and what operations you could do head back to the [Fundaments section](https://github.com/juanpablopizarro/golang-bootcamp/blob/master/fundamentals.md#arrays-slices-and-maps) to do a little recap.  
+
+Here are a few articles that delve into how maps are implemented in Go and explains just a bit about [Go's memory model](https://golang.org/ref/mem)
+* [How the Go runtime implements maps efficiently](https://dave.cheney.net/2018/05/29/how-the-go-runtime-implements-maps-efficiently-without-generics)
+* [If a map isn't a reference variable then what is it?](https://dave.cheney.net/2017/04/30/if-a-map-isnt-a-reference-variable-what-is-it)
+* [There is no pass by reference in Go](https://dave.cheney.net/2017/04/29/there-is-no-pass-by-reference-in-go)
+
+### Testing
+Go has a builting library called (testing)[https://godoc.org/testing] this library provides us with primitives to perform tests. Although this library does not give us any type of assert or mocks or anything like that.  
+To perform unit tests in Go you will tipically create a file called `ggg_test.go` where `ggg` is the name of the file you are testing. Inside that file you will create all your test functions, the convetion for the signature of a test function is like this: `func TestNameOfFuncBeingTested(t *testing.T)`. Once you have that done you can run `go test` in the command line and see the results of your tests. Here is a simple example of testing a `Sum` function using what it's called table testing:
+```go
+sum.go
+-----
+package sum
+func Sum(a, b int) int {
+    return a + b
+}
+-----
+sum_test.go
+-----
+package sum
+func TestSum(t *testing.T) {
+    cases := []struct{
+        name string
+        a, b int
+        expected int
+    }{
+        {name: "equals zero", a: 1, b: -1, expected: 0},
+        {name: "equals 2", a: 1, b: 1, expected: 2},
+    }
+    for c, _ := range cases {
+        t.Run(c.name, func(tt *testing.T){
+            if res := Sum(c.a, c.b); res != c.expected {
+                tt.Errorf("expected %d but got %d", c.expected, res)
+            }
+
+        })
+    }
+}
+```
+Try to run the tests of that code locally and see what happens.  
+
+Here are a couple of useful articles on how to perform testing in Go:
+* [Writing unit tests in Go](https://blog.alexellis.io/golang-writing-unit-tests/)
+* [Tips and tricks for writing unit tests in Go](https://medium.com/@matryer/5-simple-tips-and-tricks-for-writing-unit-tests-in-golang-619653f90742)
+* [Advanced testing techniques in Go](https://segment.com/blog/5-advanced-testing-techniques-in-go/)
+
+### File operations
+What happens when you stop the program you just wrote? Does the data persist on disk?  
+Right know we are storing everything in-memory so as soon as the program exits we loose all that data. How would you fix this? A simple approach would be to simply use files and dump all the data into a particular file as soon as the program finishes. You would also have to load all the data that a given file has when you are initializing your DB right?
+
+Go packages that *might* be useful for this:
+* [bufio](https://godoc.org/bufio)
+* [strings](https://godoc.org/strings)
+* [io](https://godoc.org/io) and [io/ioutil](https://godoc.org/io/ioutil)
+* [os](https://godoc.org/os)
+* [bytes](https://godoc.org/bytes)
+
+### Concurrency
+Say you want to use this database in an HTTP server that you have running in production, this server is probably serving more than one request at a time. What happens if both requests try to use the DB to write some data into the same section of the map? You'll have a race condition which will cause your http server to panic. Panics are not good, that's why they are called panic. To avoid this you need to guard the operations that are done on the map using whatever Go provides for this. We talked about something that does this in the [Fundamentals section](https://github.com/juanpablopizarro/golang-bootcamp/blob/master/fundamentals.md#mutexes).  
+Once you've implemented that you should write a bit of code that would perform multiple operations on the DB at the same time(look into how the `testing.T.Run()` method works). Remember to run your tests with the `race` flag, this will allow the go runtime
+
+Useful reading and libraries:
+* [sync package](https://godoc.org/sync)
+* [Synchronizing state in golang](https://kylewbanks.com/blog/tutorial-synchronizing-state-with-mutexes-golang)
 
 ---
 

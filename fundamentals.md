@@ -846,6 +846,7 @@ func main() {
 ```
 **Exercise:** go to [Go tour binary tree exercise](https://tour.golang.org/concurrency/7) and implement what it's requested
 
+#### Mutexes
 You've seen that channels are great for communicating between different goroutines, we can even use it for synchronization. But what if we want to guard a variable so that only one goroutine can access it at the same time. It would be quite cumbersome to implement a solution using only channels. Well, go is nice again and provides us with a library called `sync` that has a bunch of utilities that are useful for doing mutual exclusion using a generally refered to as `mutex`. This example was takend from the GoTour([GoPlay](https://goplay.space/#7L8oJihNE1G)):
 ```golang
 package main
