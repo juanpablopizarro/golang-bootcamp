@@ -108,10 +108,6 @@ Go packages that *might* be useful for this:
 * [os](https://godoc.org/os)
 * [bytes](https://godoc.org/bytes)
 
-Implement a new feature to the in-memory DB that:
-* Loads initial data from a local file
-* Dumps memory content to a local file when connection is closed
-
 *Note: it's not a need to dump data to file while DB session is open*
 
 ### Concurrency
