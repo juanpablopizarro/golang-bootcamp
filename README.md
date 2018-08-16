@@ -8,7 +8,7 @@ Go is mainly about three things:
 * **Go is about composition**. It is *kind* of objected oriented just not in the usual way. There are no classes(but methods can be defined on any type), no subtype inheritance and interfaces are satisfied implicitly(we have structural typing). This results in simple pieces connected by small interfaces.
 * **Go is about concurrency**. Go provides [CSP-like](https://en.wikipedia.org/wiki/Communicating_sequential_processes) concurrency primitives, it has lightweight threads called goroutines and typed thread-safe communication and synchronization with channels. This results in comprehensible concurrent code.
 * **Go is about gophers!!**
-![gopher](https://github.com/juanpablopizarro/golang-bootcamp/blob/master/docs/img/gophers.png)
+![gopher](/docs/img/gophers.png)
 
 In fact, we even have our own website where we can [create our own Gophers](http://gopherize.me/). Thanks to Mat Ryer and Ashley McNamara for making this.
 
@@ -26,7 +26,7 @@ If you don't already know git then head over to [this tutorials](https://try.git
 ### Golang fundamentals 
 Before each code example you will find a link to a website called [GoPlay space](https://goplay.space) were you can run the code and look at the documentation of packages all in the same place.
 
-Ok, head over to [Golang fundamentals](https://github.com/juanpablopizarro/golang-bootcamp/blob/master/fundamentals.md) to get started!
+Ok, head over to [Golang fundamentals](/fundamentals.md) to get started!
 
 
 ## Part 2 (2 days)
@@ -49,7 +49,7 @@ When developing in Go often times you will start by defining an interface that w
 Here is a very good talk by Francesc Campoy explaining how interfaces work in Go and how they worked: [Understanding Go interfaces](https://www.youtube.com/watch?v=F4wUrj6pmSI)
 
 ### Maps
-This is an in-memory database which means that all the data will be kept in some data structure during program execution. Since what you are storing is `key`-`value` pairs you could use golang's builtin `map` structure. If you don't remember how they worked and what operations you could do head back to the [Fundaments section](https://github.com/juanpablopizarro/golang-bootcamp/blob/master/fundamentals.md#arrays-slices-and-maps) to do a little recap.  
+This is an in-memory database which means that all the data will be kept in some data structure during program execution. Since what you are storing is `key`-`value` pairs you could use golang's builtin `map` structure. If you don't remember how they worked and what operations you could do head back to the [Fundaments section](/fundamentals.md#arrays-slices-and-maps) to do a little recap.  
 
 Here are a few articles that delve into how maps are implemented in Go and explains just a bit about [Go's memory model](https://golang.org/ref/mem)
 * [How the Go runtime implements maps efficiently](https://dave.cheney.net/2018/05/29/how-the-go-runtime-implements-maps-efficiently-without-generics)
@@ -57,7 +57,7 @@ Here are a few articles that delve into how maps are implemented in Go and expla
 * [There is no pass by reference in Go](https://dave.cheney.net/2017/04/29/there-is-no-pass-by-reference-in-go)
 
 ### Testing
-Go has a builting library called (testing)[https://godoc.org/testing] this library provides us with primitives to perform tests. Although this library does not give us any type of assert or mocks or anything like that.  
+Go has a builting library called [testing](https://godoc.org/testing) this library provides us with primitives to perform tests. Although this library does not give us any type of assert or mocks or anything like that.  
 To perform unit tests in Go you will tipically create a file called `ggg_test.go` where `ggg` is the name of the file you are testing. Inside that file you will create all your test functions, the convetion for the signature of a test function is like this: `func TestNameOfFuncBeingTested(t *testing.T)`. Once you have that done you can run `go test` in the command line and see the results of your tests. Here is a simple example of testing a `Sum` function using what it's called table testing:
 ```go
 sum.go
@@ -111,7 +111,7 @@ Go packages that *might* be useful for this:
 *Note: it's not a need to dump data to file while DB session is open*
 
 ### Concurrency
-Say you want to use this database in an HTTP server that you have running in production, this server is probably serving more than one request at a time. What happens if both requests try to use the DB to write some data into the same section of the map? You'll have a race condition which will cause your http server to panic. Panics are not good, that's why they are called panic. To avoid this you need to guard the operations that are done on the map using whatever Go provides for this. We talked about something that does this in the [Fundamentals section](https://github.com/juanpablopizarro/golang-bootcamp/blob/master/fundamentals.md#mutexes).  
+Say you want to use this database in an HTTP server that you have running in production, this server is probably serving more than one request at a time. What happens if both requests try to use the DB to write some data into the same section of the map? You'll have a race condition which will cause your http server to panic. Panics are not good, that's why they are called panic. To avoid this you need to guard the operations that are done on the map using whatever Go provides for this. We talked about something that does this in the [Fundamentals section](/fundamentals.md#mutexes).  
 Once you've implemented that you should write a bit of code that would perform multiple operations on the DB at the same time(look into how the `testing.T.Run()` method works). Remember to run your tests with the `race` flag this will allow the go runtime to inspect whether your code has any race conditions.
 
 Useful reading and libraries:
@@ -153,12 +153,14 @@ The features needed are:
 * http statuses responses
 
 ### REST Impl (3 days)
+Before you start writing the code for your API head over to our [HTTP Services in Go](/httpServices.md) section to learn the basics of writing servers in Go.
+
 Once the API is defined, we are ready to implement it. 
-There are several way to implement it, you can choose 
+There are quite a lot of go libraries for creating HTTP routers and handlers. But to learn more about how all of it works use one of the following two options:
 * Go Native: https://godoc.org/net/http
 * Gorilla mux: https://godoc.org/github.com/gorilla/mux
 
-You should also consider adding some integration testing for he implemented API, using https://godoc.org/net/http/httptest.
+You should also consider adding some integration testing for the implemented API, using https://godoc.org/net/http/httptest.
 Consider also taking a look at:
 * [unit testing HTTP servers](https://www.youtube.com/watch?v=hVFEV-ieeew) _(video)_
 * [Go Testing Technique: Testing JSON HTTP Requests](https://medium.com/@xoen/go-testing-technique-testing-json-http-requests-76d9ce0e11f)
