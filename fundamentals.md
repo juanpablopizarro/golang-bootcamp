@@ -479,8 +479,8 @@ func main() {
 ### Interfaces
 Interfaces allow us to group together functions with specific signatures specified by us. The value of interfaces can be any value that implements those methods.  
 In Go, interfaces are implemented implicitly. This there is no `implements` or anything like that. If a given type implements the functions specified by a given interface then that type will implement that interface without us saying anything.  
-Interfaces hold a value, which is a value of a specific underlying concrete type, and type which is the concrete type mentioned. One cool thing about interface values in Go is that they can be nil, so essentially you can call a method on a nil value that implements the interface and that will be fine, in other languages this will probably result in null pointer exceptions.  
-You might be wondering: well what happens if the interface has no methods? wouldn't any concrete type implement that interface?? ... Well you are right. The empty interface usually refered to as `interface{}` can hold values of any type. Is sometimes comes in handy when you are handling values of an unknown type. For example, in the `json` package of the standard library you have the [Encoder.Encode](https://godoc.org/encoding/json#Encoder.Encode) method that receives the data you want it to encode through an `interface{}` so can basically send everything to that method.  
+Interfaces hold a value and a type, the value is the value of the specific underlying concrete type mentioned. One cool thing about interface values in Go is that they can be nil, so essentially you can call a method on a nil value that implements the interface and that will be fine, in other languages this will probably result in null pointer exceptions.  
+You might be wondering: well what happens if the interface has no methods? wouldn't any concrete type implement that interface?? ... Well you are right. The empty interface usually refered to as `interface{}` can hold values of any type. This sometimes comes in handy when you are handling values of an unknown type. For example, in the `json` package of the standard library you have the [Encoder.Encode](https://godoc.org/encoding/json#Encoder.Encode) method that receives the data you want it to encode through an `interface{}` so you can basically send anything you want to that method.  
 **BE CAREFUL** when using the empty interface, don't over use it, whenever you are defining the API for your library try to see if you can instead use a user-defined interface with methods that express the meaning of the types the API will handle.  
 When defining interfaces Go recommends to reduce the number of methods you put in that interface, since **the bigger the interface, the weaker the abstraction**.  
 That was a lot of text, is time for some code([GoPlay](https://goplay.space/#FNh0cTZqrTb)):
@@ -932,3 +932,22 @@ func main() {
 }
 ```
 **Exercise:** go to [Go tour web crawler exercise](https://tour.golang.org/concurrency/10) and implement what it's requested.
+
+### Recap
+You just read a bunch of text so lets do a set of questions, sort of like a recap, to test your knowledge. This list has not only questions but also exercises that you need to solve. We recommend you to put all this in a repository so that the instructors can see how are doing, do a bit of code review and help you with whatever difficulty you may be having.  
+
+* How would you write a `while` statement in Go?
+* What does the keyword `defer` do?
+* Does Go support pointers? How do arguments get passed around(by value or by reference)?
+* Are arrays in Go fixed length? How about slices?
+* Say you have a map: `map[string]int`, how would do a lookup and check to see if the map holds the value of the key you were looking for?
+* How does Go structure programs? What is the difference between a library and a program that executes?
+* How do make a function or a type public? And how do you make it private?
+* You are going to be building a simple calculator with 4 basic operations(add, subtract, multiply and divide). First build a library that provides those 4 methods. After that implement a program that reads from the command line the operation to be done and prints the result(by calling the library you implemented previously). The operation should be read however you'd like, but for simplicity sake limit yourself to 2 operands and 1 operation character. Something like `./program 1 + 2`.
+* Suppose you are building a web server that needs a DB that can do a set of simple operations. You know that the requirements of what DB to use will change. You also now that it will be easier for testing purposes to not have to setup something like MySQL. How would you solve this problem using the feature that Go provide?
+* How would you build a simple function that can receive *any* type of argument and prints the if that argument is of a primitive type. Limit to just `int`, `string`, `float` and `bool`.
+* How are errors defined in Go?
+* Ok, you know how errors are defined in Go now. Time to build a simple `errors` package that allows you to build errors that specify what kind of error is it, limit yourself to 3 kinds: `Internal`, `ThirdParty` and `Other`. Then provide a function in that package for users to check if the error they have is of the kind they care about. **NOTE**: remember not to break with the way errors are defined in Go, take advantage of that.
+* What do you use to make two functions concurrent?
+* How would you synchronize two concurrent functions?
+* Write a program with three functions. One will send stuff(whatever you'd like) over a channel every one second and one will receive it and print it. The third function will tell the other two functions to stop and return(it could be the main func) after 5 seconds. **NOTE**: the program can not end until the sender and receiver have returned.
