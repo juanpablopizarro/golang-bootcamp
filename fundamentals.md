@@ -1,7 +1,7 @@
 # Golang fundamentals
 
 ### Packages
-In Go, programs are structured using packages. The main function of a package should be in `package main`. If you create a project that does not have a package main then it means you are creating a library. Go's convetion says that the name of the package should match the last element of the import path. An import path is basically the path to the project from within your Go workspace.  
+In Go, programs are structured using packages. The main function of a package should be in `package main`. If you create a project that does not have a package main then it means you are creating a library. Go's convetion says that the name of the package should match the last element of the import path. An import path is basically the path to the project from within your Go workspace.
 Now that we are talking about imports, go gives us the statement `import "<path>"` to import a specific package either from the standard library or some package in our go workspace. Example([GoPlay](https://goplay.space/#bB6DC_CV-bF)):
 ```golang
 package main
@@ -19,7 +19,7 @@ func main() {
 ```
 
 #### Exporting names
-If you've used Java then you probably already had fun with those endless method definitions, I'm talking about you `public static void main`.  
+If you've used Java then you probably already had fun with those endless method definitions, I'm talking about you `public static void main`.
 Go has no *specific* access modifiers like public or private. In Go, names are either package-level or public. And you do this by making the first letter of the name be a capital letter. When you import a package you can only refer to those names that start with a capital letter. For example([GoPlay](https://goplay.space/#CrFk7n7AWd6)):
 ```golang
 package main
@@ -38,7 +38,7 @@ func main() {
 ```
 
 ### Functions
-Functions in Go can take any number of arguments and return any number of results. The typical model in Go is to return the results you want plus an error, but we'll cover errors later.  
+Functions in Go can take any number of arguments and return any number of results. The typical model in Go is to return the results you want plus an error, but we'll cover errors later.
 The return values of a function may be named, if so then Go will treat them as local variables to the scope of the function.  Example([GoPlay](https://goplay.space/#xPmMJhUXExA)):
 ```golang
 package main
@@ -56,7 +56,7 @@ func main() {
 	fmt.Println(split(17))
 }
 ```
-Something interesting that Go has are variadic functions. This functions can be called with any number of trailing arguments. An example from the standard library may be [fmt.Println](https://golang.org/src/fmt/print.go?s=7595:7644#L253).  
+Something interesting that Go has are variadic functions. This functions can be called with any number of trailing arguments. An example from the standard library may be [fmt.Println](https://golang.org/src/fmt/print.go?s=7595:7644#L253).
 Here is an example that will illustrate all this([GoPlay](https://goplay.space/#9xI5pni7y-g)):
 ```golang
 package main
@@ -90,7 +90,7 @@ func main() {
 
 ### Flow control statements
 #### For
-Go gives us only one looping construct, the `for` loop. This means we don't have a while, or a repeat until or anything like that.  
+Go gives us only one looping construct, the `for` loop. This means we don't have a while, or a repeat until or anything like that.
 For loops have a basic structure similar to the one used at C, except we don't use parenthesis, they will actually be a compilation error:
 ```golang
 for i := 0; i < 2; i++ {
@@ -104,6 +104,56 @@ for i != 4 {
 }
 ```
 But you can also omit everything and you'll have an endless loop.
+
+**range** iterates over elements in a variety of data structures. Let’s see how to use range with some of the data structures. ([GoPlay](https://play.golang.org/p/ChWJFN-Zaoy))
+
+```golang
+
+package main
+
+import "fmt"
+
+func main() {
+
+    // Here we use `range` to sum the numbers in a slice.
+    // Arrays work like this too.
+    nums := []int{2, 3, 4}
+    sum := 0
+    for _, num := range nums {
+        sum += num
+    }
+    fmt.Println("sum:", sum)
+
+    // `range` on arrays and slices provides both the
+    // index and value for each entry. Above we didn't
+    // need the index, so we ignored it with the
+    // blank identifier `_`. Sometimes we actually want
+    // the indexes though.
+    for i, num := range nums {
+        if num == 3 {
+            fmt.Println("index:", i)
+        }
+    }
+
+    // `range` on map iterates over key/value pairs.
+    kvs := map[string]string{"a": "apple", "b": "banana"}
+    for k, v := range kvs {
+        fmt.Printf("%s -> %s\n", k, v)
+    }
+
+    // `range` can also iterate over just the keys of a map.
+    for k := range kvs {
+        fmt.Println("key:", k)
+    }
+
+    // `range` on strings iterates over Unicode code
+    // points. The first value is the starting byte index
+    // of the `rune` and the second the `rune` itself.
+    for i, c := range "go" {
+        fmt.Println(i, c)
+    }
+}
+```
 
 #### If
 If statements, like for, does not used parenthesis. We can start if statements with a statement to execute before the condition, for example:
@@ -139,7 +189,7 @@ func main() {
 You could also write a switch case with no condition, providing a cleaner way to write long if-else chains.
 
 #### Defer
-Defer is something that gets used a lot in Go. This statements defers the execution of the function until the surrounding function returns. The arguments that it receives are evaluated immediately but the function does not get executed until the surrounding function returns.  
+Defer is something that gets used a lot in Go. This statements defers the execution of the function until the surrounding function returns. The arguments that it receives are evaluated immediately but the function does not get executed until the surrounding function returns.
 Deferred function calls get pushed into a call stack. When a function returns the go runtime will pop each of the deferred functions and execute them(it's a LIFO structure). Example([GoPlay](https://goplay.space/#6hzIT6lIo5F)):
 ```golang
 package main
@@ -176,10 +226,10 @@ float32 float64
 
 complex64 complex128
 ```
-This types can be manipulated with different operators. Strings can be added together with `+` as can integers and floats.  
+This types can be manipulated with different operators. Strings can be added together with `+` as can integers and floats.
 Booleans have all the boolean operators as expected.
 
-This types are used when declaring variables. In Go you can declare variables in three different ways that will be shown in the code below.  
+This types are used when declaring variables. In Go you can declare variables in three different ways that will be shown in the code below.
 Go also lets you declare constants by preceding the keyword `const` before the name. The type of the constant gets inferred.
 [Run it online](https://goplay.space/#cmQu-3Uf58J)
 ```golang
@@ -205,10 +255,10 @@ func main() {
 	fmt.Printf("str: %v\n", str)
 }
 ```
-When you declare a variable in Go with no initialization that variable will hold the zero-value of the specified type. For example, in the case of `someInt`, its zero-value will be `0`. For a `bool` the zero-value will be `false`, strings will be `""`.  
+When you declare a variable in Go with no initialization that variable will hold the zero-value of the specified type. For example, in the case of `someInt`, its zero-value will be `0`. For a `bool` the zero-value will be `false`, strings will be `""`.
 If you want to know more about why Go uses the format `<name> <type>` for declaring variables and parameters you can checkout [Go's declaration syntax](https://blog.golang.org/gos-declaration-syntax)
 
-Type casting in Go is done by enclosing the variable or value you want to cast with parenthesis, preceded by the type you want to cast it to.  
+Type casting in Go is done by enclosing the variable or value you want to cast with parenthesis, preceded by the type you want to cast it to.
 For example([GoPlay](https://goplay.space/#rAUMn61amkI)):
 ```golang
 package main
@@ -224,10 +274,10 @@ func main() {
 ```
 
 ### Exercise
-Before moving along with the rest of the contents head over to the [loops and functions exercise](https://tour.golang.org/flowcontrol/8) and implement what it is requested there. Try to run your code locally so that you check that the environment you setup previously is properly working.  
+Before moving along with the rest of the contents head over to the [loops and functions exercise](https://tour.golang.org/flowcontrol/8) and implement what it is requested there. Try to run your code locally so that you check that the environment you setup previously is properly working.
 
 ### Pointers
-Go has pointers. A pointer in Go will hold the memory address of a value. The zero-value of pointers it's `nil`.  
+Go has pointers. A pointer in Go will hold the memory address of a value. The zero-value of pointers it's `nil`.
 To declare a pointer to a type we use a syntax similar to C:
 ```golang
 var somePointer *int
@@ -275,6 +325,9 @@ func main() {
 }
 ```
 If you declare a pointer to a struct one could think that in order to access the fields we would have to use the pointer notation. But Go is nice and we don't have to type those 3 extra characters, we can simply do the following([GoPlay](https://goplay.space/#wKurxTznpp5)):
+
+__NOTE:__ notice that in the above example the struct attributes are private because the first letter is in lower case.
+
 ```golang
 package main
 
@@ -309,7 +362,7 @@ func main() {
 
 ### Composition over inheritance
 Like we stated previously in the introduction. Go is all about composition, in fact, there is no inheritance. If you want to share behaviour and data of something you compose something with that type, no need of subclassing and specifying a complex tree of class hierarchy and inheritance.
-Coming from an OOP world this might be weird at first. But composition is actually a well understood concept of OOP and in Go you will use it quite a lot. To learn a bit more about how this works you can read [this section](https://golang.org/doc/effective_go.html#embedding) of Effective Go to see some real-live examples of how you can benefit this.  
+Coming from an OOP world this might be weird at first. But composition is actually a well understood concept of OOP and in Go you will use it quite a lot. To learn a bit more about how this works you can read [this section](https://golang.org/doc/effective_go.html#embedding) of Effective Go to see some real-live examples of how you can benefit this.
 Lets take a look at a simple example of how you would use this([GoPlay](https://goplay.space/#AnaEldEzcBl)):
 ```go
 package main
@@ -347,10 +400,10 @@ func main() {
 
 
 ### Arrays, slices and maps
-In Go there is something that is often confusing to newcomers and that is the difference between arrays and slices.  
-Arrays are like you would think, a fixed size list of indexed values that all share the same type.  
-Slices are something a bit more interesting. The first difference would be that arrays have a fixed size, while slices are dynamically allocated. In practice you will probably always see slices instead of arrays.  
-Something that is worth noting is that slices themselves don't hold the array of the data. They are simply `structs` that contain three fields: Len, Cap and Data. Len is going to be the length of the array, Cap is the maximum capacity of the array and Data is a pointer to the backing array. [Here](https://golang.org/pkg/reflect/#SliceHeader) you can see the struct of the slice.  
+In Go there is something that is often confusing to newcomers and that is the difference between arrays and slices.
+Arrays are like you would think, a fixed size list of indexed values that all share the same type.
+Slices are something a bit more interesting. The first difference would be that arrays have a fixed size, while slices are dynamically allocated. In practice you will probably always see slices instead of arrays.
+Something that is worth noting is that slices themselves don't hold the array of the data. They are simply `structs` that contain three fields: Len, Cap and Data. Len is going to be the length of the array, Cap is the maximum capacity of the array and Data is a pointer to the backing array. [Here](https://golang.org/pkg/reflect/#SliceHeader) you can see the struct of the slice.
 Slices and arrays are initializaed differently and they let us do different type of operations. Below is a code that will explain all this in more detail([GoPlay](https://goplay.space/#NPh97D1qgEY)):
 ```golang
 package main
@@ -387,7 +440,7 @@ func main() {
 	fmt.Println(fiveToSix)
 }
 ```
-To learn more about the usage of slices and how they work internally refer to [this blog post](https://blog.golang.org/go-slices-usage-and-internals).  
+To learn more about the usage of slices and how they work internally refer to [this blog post](https://blog.golang.org/go-slices-usage-and-internals).
 **Excercise:** Go to [Go Tour slices excercise](https://tour.golang.org/moretypes/18) and implement what it's requested there.
 
 Maps are basically like dictonaries in python or HashMaps in java. They map a key to a given value and let us access those values using the specified keys. The zero value of a map is going to be nil as with slices. Both keys and values can be of any given type, from structs to basic types to interfaces(which we will cover later). Much like slices, we can use `make` to create maps. Examples([GoPlay](https://goplay.space/#xjeZ48dknCc)):
@@ -419,7 +472,7 @@ func main() {
 **Exercise:** go to [Go tour maps excercise](https://tour.golang.org/moretypes/23) and implement what it's requested.
 
 ### Function types
-In Go, functions are first class citizens. This means that you can use functions as if they were like any other types(ints, string, what have you). In fact, along the standard library and many other packages you will find that lots and lots of function types. For example, in the `net/http` library there is a function type that is commonly used named [http.HandlerFunc](https://godoc.org/net/http#HandlerFunc) with a signature of `func (http.ResponseWriter, *http.Request)`.  
+In Go, functions are first class citizens. This means that you can use functions as if they were like any other types(ints, string, what have you). In fact, along the standard library and many other packages you will find that lots and lots of function types. For example, in the `net/http` library there is a function type that is commonly used named [http.HandlerFunc](https://godoc.org/net/http#HandlerFunc) with a signature of `func (http.ResponseWriter, *http.Request)`.
 To declare and use function types you can do something like this([GoPlay](https://goplay.space/#rZ4Z48yEykG)):
 ```golang
 package main
@@ -447,9 +500,9 @@ func someFunc(f func() error) error {
 **Exercise:** go to [Go tour closure exercise](https://tour.golang.org/moretypes/26) and implement what it's requested.
 
 ### Methods
-Go, unlike objected oriented programming, does not have classes. But it does have methods that you can define on concrete types. This might seem a bit weird, but a method is just a function with a special *receiver*. This receiver can be of **any** type, ints, structs, strings and anything you can think of(they can be defined on function types too, cool inception right?).  
-Since the receiver can be of any type, it might hold a certain state. For example if I have a struct with two int fields then those two fields will be accessible from the methods I defined on top of that struct. If you want to modify those states and you want it to be reflected outside of the method you are going to have to define the receiver as a pointer receiver, this means that the receiver will hold the address of the state being manipulated. If we instead use value receivers then the methods will be operating on copies of the original values.  
-For convenience, Go will let us call the methods that have pointer receivers with a value, so that we don't have to type 3 extra characters(doing `v.Method()` instead of `(&v).Method()`).  
+Go, unlike objected oriented programming, does not have classes. But it does have methods that you can define on concrete types. This might seem a bit weird, but a method is just a function with a special *receiver*. This receiver can be of **any** type, ints, structs, strings and anything you can think of(they can be defined on function types too, cool inception right?).
+Since the receiver can be of any type, it might hold a certain state. For example if I have a struct with two int fields then those two fields will be accessible from the methods I defined on top of that struct. If you want to modify those states and you want it to be reflected outside of the method you are going to have to define the receiver as a pointer receiver, this means that the receiver will hold the address of the state being manipulated. If we instead use value receivers then the methods will be operating on copies of the original values.
+For convenience, Go will let us call the methods that have pointer receivers with a value, so that we don't have to type 3 extra characters(doing `v.Method()` instead of `(&v).Method()`).
 Stop talking and show me the code([GoPlay](https://goplay.space/#sHBFKyoY5wf)):
 ```golang
 package main
@@ -477,12 +530,12 @@ func main() {
 ```
 
 ### Interfaces
-Interfaces allow us to group together functions with specific signatures specified by us. The value of interfaces can be any value that implements those methods.  
-In Go, interfaces are implemented implicitly. This there is no `implements` or anything like that. If a given type implements the functions specified by a given interface then that type will implement that interface without us saying anything.  
-Interfaces hold a value and a type, the value is the value of the specific underlying concrete type mentioned. One cool thing about interface values in Go is that they can be nil, so essentially you can call a method on a nil value that implements the interface and that will be fine, in other languages this will probably result in null pointer exceptions.  
-You might be wondering: well what happens if the interface has no methods? wouldn't any concrete type implement that interface?? ... Well you are right. The empty interface usually refered to as `interface{}` can hold values of any type. This sometimes comes in handy when you are handling values of an unknown type. For example, in the `json` package of the standard library you have the [Encoder.Encode](https://godoc.org/encoding/json#Encoder.Encode) method that receives the data you want it to encode through an `interface{}` so you can basically send anything you want to that method.  
-**BE CAREFUL** when using the empty interface, don't over use it, whenever you are defining the API for your library try to see if you can instead use a user-defined interface with methods that express the meaning of the types the API will handle.  
-When defining interfaces Go recommends to reduce the number of methods you put in that interface, since **the bigger the interface, the weaker the abstraction**.  
+Interfaces allow us to group together functions with specific signatures specified by us. The value of interfaces can be any value that implements those methods.
+In Go, interfaces are implemented implicitly. This there is no `implements` or anything like that. If a given type implements the functions specified by a given interface then that type will implement that interface without us saying anything.
+Interfaces hold a value and a type, the value is the value of the specific underlying concrete type mentioned. One cool thing about interface values in Go is that they can be nil, so essentially you can call a method on a nil value that implements the interface and that will be fine, in other languages this will probably result in null pointer exceptions.
+You might be wondering: well what happens if the interface has no methods? wouldn't any concrete type implement that interface?? ... Well you are right. The empty interface usually refered to as `interface{}` can hold values of any type. This sometimes comes in handy when you are handling values of an unknown type. For example, in the `json` package of the standard library you have the [Encoder.Encode](https://godoc.org/encoding/json#Encoder.Encode) method that receives the data you want it to encode through an `interface{}` so you can basically send anything you want to that method.
+**BE CAREFUL** when using the empty interface, don't over use it, whenever you are defining the API for your library try to see if you can instead use a user-defined interface with methods that express the meaning of the types the API will handle.
+When defining interfaces Go recommends to reduce the number of methods you put in that interface, since **the bigger the interface, the weaker the abstraction**.
 That was a lot of text, is time for some code([GoPlay](https://goplay.space/#FNh0cTZqrTb)):
 ```golang
 package main
@@ -531,8 +584,8 @@ func greetAndBye(g Greeter, name string) {
 	fmt.Printf("Bye %v\n", name)
 }
 ```
-You are going to implement a solution to two different exercises that will show you interfaces from the standard library that are commonly used.  
-**Exercise:** go to [Go tour stringers exercise](https://tour.golang.org/methods/18) and implement what it's requested.  
+You are going to implement a solution to two different exercises that will show you interfaces from the standard library that are commonly used.
+**Exercise:** go to [Go tour stringers exercise](https://tour.golang.org/methods/18) and implement what it's requested.
 **Exercise:** go to [Go tour readers exercise](https://tour.golang.org/methods/22) and implement what it's requested.
 
 #### Type assertions
@@ -617,7 +670,7 @@ func extract(v interface{}) {
 ```
 
 ### Errors
-Errors are something of great discussion in Golang, mainly because it is very different to what we typically use in languages like Java or Ruby. If you want to express an error in those languages you would create your own exception and give it a meaningful name and maybe a description. You would then need aditional control structures like `try..catch ` to handle those errors.  
+Errors are something of great discussion in Golang, mainly because it is very different to what we typically use in languages like Java or Ruby. If you want to express an error in those languages you would create your own exception and give it a meaningful name and maybe a description. You would then need aditional control structures like `try..catch ` to handle those errors.
 In Go we instead treat errors as simple values. For this we have the `error` type that is nothing more than an [interface with a single method](https://godoc.org/builtin#error):
 ```golang
 type error interface {
@@ -646,9 +699,9 @@ func importantFunc() (string, error) {
 
 ### Concurrency
 #### Goroutines
-If you heard of Go then you probably also heard that Go has a kick-ass native support for concurrency. It is extremely simple and very efficient.  
-For this Go uses the concept of *goroutines*, a goroutine is lightweight thread managed by the Go runtime. This means that in a single OS Thread we can have multiple goroutines, thousands if you want.  
-This goroutines run in the same address space so you will have to be careful when you are accessing data from multiple goroutines.  
+If you heard of Go then you probably also heard that Go has a kick-ass native support for concurrency. It is extremely simple and very efficient.
+For this Go uses the concept of *goroutines*, a goroutine is lightweight thread managed by the Go runtime. This means that in a single OS Thread we can have multiple goroutines, thousands if you want.
+This goroutines run in the same address space so you will have to be careful when you are accessing data from multiple goroutines.
 This shows a bit how you can use goroutines([GoPlay](https://goplay.space/#cRTTaMlqWj0)):
 ```golang
 package main
@@ -722,8 +775,8 @@ func main() {
 	fmt.Println(m)
 }
 ```
-In the comments we specified that the instruction `m := <-messages` will block until the channel has something we can read, so until the goroutine sends something to the messages channel that instruction will block the program there.  
-Receiving from a channel will *always* block, but sending to the channel may or may not block depending on how we initialize the channel. In the previous example we declared that channel as a synchronous channel, how did we do that? By not specifying a size when we created with `make`(line 9).  
+In the comments we specified that the instruction `m := <-messages` will block until the channel has something we can read, so until the goroutine sends something to the messages channel that instruction will block the program there.
+Receiving from a channel will *always* block, but sending to the channel may or may not block depending on how we initialize the channel. In the previous example we declared that channel as a synchronous channel, how did we do that? By not specifying a size when we created with `make`(line 9).
 If we want to make an asynchronous channel, meaning that it will not block when we try to send something, then we need to declare a **buffered channel**. To create them you have to specify a size when you initialize it with `make`. For example([GoPlay](https://goplay.space/#5V-qhnN3zAs)):
 ```golang
 package main
@@ -810,7 +863,7 @@ func someFunc(done <-chan bool) {
 }
 ```
 
-Closing a channel indicates that no more values will be sent on it. This can sometimes be useful to indicate a completion to the ones that are receiving from it. Reading from a closed channel does not return error, it returns the zero-value of the type of the channel. So if you have declared a channel of strings and you read from it after closing it you will get all empty strings. If you are using structs then the zero-value will be nil.  
+Closing a channel indicates that no more values will be sent on it. This can sometimes be useful to indicate a completion to the ones that are receiving from it. Reading from a closed channel does not return error, it returns the zero-value of the type of the channel. So if you have declared a channel of strings and you read from it after closing it you will get all empty strings. If you are using structs then the zero-value will be nil.
 This allows us to use the `for range` structure to iterate over the values of the channel until the channel is closed. The next example will cover this use cases([GoPlay](https://goplay.space/#WGVtmD3Ck5C)):
 ```golang
 package main
@@ -934,7 +987,7 @@ func main() {
 **Exercise:** go to [Go tour web crawler exercise](https://tour.golang.org/concurrency/10) and implement what it's requested.
 
 ### Recap
-You just read a bunch of text so lets do a set of questions, sort of like a recap, to test your knowledge. This list has not only questions but also exercises that you need to solve. We recommend you to put all this in a repository so that the instructors can see how are doing, do a bit of code review and help you with whatever difficulty you may be having.  
+You just read a bunch of text so lets do a set of questions, sort of like a recap, to test your knowledge. This list has not only questions but also exercises that you need to solve. We recommend you to put all this in a repository so that the instructors can see how are doing, do a bit of code review and help you with whatever difficulty you may be having.
 
 * How would you write a `while` statement in Go?
 * What does the keyword `defer` do?
