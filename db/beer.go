@@ -2,7 +2,7 @@ package db
 
 //Beer is an entity that represents a record in the database
 type Beer struct {
-	id   int64
+	ID   int64
 	Desc string
 
 	//AlcoholCont is a percentage that describes the graduation of pure alcohol per 100ml of beer

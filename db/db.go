@@ -1,47 +1,47 @@
 package db
 
 //db global storage in memory
-var db = make(map[int64]interface{})
+var db = make(map[int64]Beer)
 
 //id auto incremental value
 var index int64 = 0
 
-//Entity is an interface that allows to interact with the database
-type Entity struct{}
-
 //Create a new record in the database
-func (e Entity) Create(ent interface{}) interface{} {
+func Create(beer Beer) Beer {
 	index++
-	db[index] = ent
-	return ent
+	beer.ID = index
+	db[index] = beer
+	return beer
 }
 
 //Update a record by id in the database
-func (e Entity) Update(ent interface{}, id int64) bool {
+func Update(beer Beer, id int64) bool {
 	_, ok := db[id]
 
 	if !ok {
 		return ok
 	}
 
-	db[id] = ent
+	db[id] = beer
 
 	return ok
 }
 
 //Get a record by id in the database
-func (e Entity) Get(id int64) interface{} {
-	ent, ok := db[id]
+func Get(id int64) Beer {
+	beer, ok := db[id]
 
 	if !ok {
-		return Entity{}
+		return Beer{}
 	}
 
-	return ent
+	beer.ID = id
+
+	return beer
 }
 
 //Delete a record by id in the database
-func (e Entity) Delete(id int64) bool {
+func Delete(id int64) bool {
 	_, ok := db[id]
 
 	if ok {
@@ -49,10 +49,4 @@ func (e Entity) Delete(id int64) bool {
 	}
 
 	return ok
-}
-
-//Connection emulates returning a real connection to the database
-func Connection() *Entity {
-	//emulates a connection
-	return &Entity{}
 }
