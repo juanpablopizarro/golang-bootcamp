@@ -1,52 +1,84 @@
 package db
 
-//db global storage in memory
-var db = make(map[int64]Beer)
+import (
+	"fmt"
+	"github.com/google/uuid"
+	"github.com/luciodesimone/golang-bootcamp/beer"
+)
 
-//id auto incremental value
-var index int64 = 0
-
-//Create a new record in the database
-func Create(beer Beer) Beer {
-	index++
-	beer.ID = index
-	db[index] = beer
-	return beer
+//DB define all the operations that can be done with database
+type DB interface {
+	Create(beer.Beer) beer.Beer
+	Update(string, beer.Beer) error
+	Get(string, *beer.Beer) error
+	Delete(string) error
 }
 
-//Update a record by id in the database
-func Update(beer Beer, id int64) bool {
-	_, ok := db[id]
+type storage struct {
+	db map[string]beer.Beer
+}
+
+//NewStorage creates a new beer database
+func NewStorage() DB {
+	return &storage{
+		db: make(map[string]beer.Beer),
+	}
+}
+
+//OpenStorage allows to use the interface of the database
+//on a existent one
+func OpenStorage(db *map[string]beer.Beer) DB {
+	return &storage{
+		db: *db,
+	}
+}
+
+//Create a new beer record in the database, returns error if the UUID creation fails
+func (s *storage) Create(b beer.Beer) beer.Beer {
+	uid := uuid.New()
+
+	b.ID = uid.String()
+	s.db[b.ID] = b
+
+	return b
+}
+
+//Updates a beer record by id in the database
+func (s *storage) Update(id string, b beer.Beer) error {
+	_, ok := s.db[id]
 
 	if !ok {
-		return ok
+		return fmt.Errorf("The ID entered doesn't exist")
 	}
 
-	db[id] = beer
+	b.ID = id
+	s.db[id] = b
 
-	return ok
+	return nil
 }
 
-//Get a record by id in the database
-func Get(id int64) Beer {
-	beer, ok := db[id]
+//Get a new record by id from the database, the beer will be returned in b returns an error if not found
+func (s storage) Get(id string, b *beer.Beer) error {
+	record, ok := s.db[id]
 
 	if !ok {
-		return Beer{}
+		return fmt.Errorf("No records returned")
 	}
 
-	beer.ID = id
+	*b = record
 
-	return beer
+	return nil
 }
 
-//Delete a record by id in the database
-func Delete(id int64) bool {
-	_, ok := db[id]
+//Delete phisically a record by id from the database, returns an error if not found
+func (s *storage) Delete(id string) error {
+	_, ok := s.db[id]
 
-	if ok {
-		delete(db, id)
+	if !ok {
+		return fmt.Errorf("No records found")
 	}
 
-	return ok
+	delete(s.db, id)
+
+	return nil
 }

@@ -1,12 +1,15 @@
 package db_test
 
 import (
+	"github.com/luciodesimone/golang-bootcamp/beer"
 	"github.com/luciodesimone/golang-bootcamp/db"
 	"testing"
 )
 
-var mockBeer = db.Beer{
-	ID:          1,
+//we only use a copy of this variable to prevent data dependency
+//between test cases
+var mockBeer = beer.Beer{
+	ID:          "mock-id",
 	Desc:        "mock-beer-description",
 	AlcoholCont: 5.5,
 	IBU:         90,
@@ -14,62 +17,152 @@ var mockBeer = db.Beer{
 	AvgScore:    74.2,
 }
 
-func TestDb(t *testing.T) {
-	//Create
-	b := db.Create(mockBeer)
+func newMockStorage() map[string]beer.Beer {
+	mockDB := make(map[string]beer.Beer)
+	mockDB["mock-id"] = mockBeer
+	return mockDB
+}
 
-	if b != mockBeer {
-		t.Errorf("DB creation failed, expecting: %v", mockBeer)
+func TestNewStorage(t *testing.T) {
+	s := db.NewStorage()
+
+	_, ok := s.(db.DB)
+
+	if !ok {
+		t.Errorf("A new storage must be a DB interface")
+	}
+}
+
+func TestNOpenStorage(t *testing.T) {
+	s := newMockStorage()
+	open := db.OpenStorage(&s)
+	b := mockBeer
+
+	_, ok := s["mock-id"]
+
+	if !ok {
+		t.Errorf("The storage open storage should contain the data that is pointing the mock db")
 	}
 
-	if b.ID != int64(1) {
-		t.Errorf("DB creation failed, expecting id to be: 1, recieved: %d", b.ID)
+	bStored := beer.Beer{}
+
+	err := open.Get("mock-id", &bStored)
+
+	if err != nil {
+		t.Errorf("The storages doesn't point to the same location")
 	}
 
-	//Get
-	record := db.Get(1)
+	if bStored != b {
+		t.Errorf("The storages doesn't have the same content")
+	}
+}
 
-	if record != mockBeer {
-		t.Errorf("DB get failed, expecting: %v", mockBeer)
+func TestCreate(t *testing.T) {
+	bMock := mockBeer
+
+	s := db.NewStorage()
+
+	b := s.Create(bMock)
+
+	if b.Desc != b.Desc {
+		t.Errorf("Expected description to be: %s recieved: %s", b.Desc, b.Desc)
 	}
 
-	record = db.Get(2)
-
-	if record == mockBeer {
-		t.Errorf("DB get failed, expecting not to be defined")
+	if b.IBU != b.IBU {
+		t.Errorf("Expected IBU to be: %d recieved: %d", b.IBU, b.IBU)
 	}
 
-	//Update
-	newBeer := db.Beer{
-		Desc:        "mock-new-beer-description",
-		AlcoholCont: 10,
-		IBU:         48,
-		SRM:         80,
-		AvgScore:    54.2,
+	if b.AlcoholCont != b.AlcoholCont {
+		t.Errorf("Expected alcohol content to be: %f recieved: %f", b.AlcoholCont, b.AlcoholCont)
 	}
 
-	succ := db.Update(newBeer, 1)
-
-	if !succ {
-		t.Errorf("DB update failed, expecting update to success")
+	if b.SRM != b.SRM {
+		t.Errorf("Expected SRM to be: %d recieved: %d", b.SRM, b.SRM)
 	}
 
-	succ = db.Update(newBeer, 15)
-
-	if succ {
-		t.Errorf("DB update failed, expecting update to fail")
+	if b.AvgScore != b.AvgScore {
+		t.Errorf("Expected average score to be: %f recieved: %f", b.AvgScore, b.AvgScore)
 	}
 
-	//Delete
-	succ = db.Delete(2)
+}
 
-	if succ {
-		t.Errorf("DB delete failed, expecting update to fail")
+func TestUpdate(t *testing.T) {
+	mockDB := newMockStorage()
+
+	s := db.OpenStorage(&mockDB)
+	b := mockBeer
+
+	err := s.Update("mock-id", b)
+
+	if err != nil {
+		t.Errorf("Error updating: %s", err.Error())
+	}
+}
+
+func TestUpdateNotFound(t *testing.T) {
+	s := db.NewStorage()
+	b := mockBeer
+
+	err := s.Update("non-existent", b)
+
+	if err == nil {
+		t.Errorf("Error updating, expected the record to don't exist")
+	}
+}
+
+func TestGet(t *testing.T) {
+	mockDB := newMockStorage()
+
+	s := db.OpenStorage(&mockDB)
+	b := beer.Beer{}
+
+	err := s.Get("mock-id", &b)
+
+	if err != nil {
+		t.Errorf("Error getting the record: %s", err.Error())
 	}
 
-	succ = db.Delete(1)
+	if b.ID != "mock-id" {
+		t.Errorf("Error the record ID getted is incorrect: %s", err.Error())
+	}
 
-	if !succ {
-		t.Errorf("DB delete failed, expecting update to success")
+}
+
+func TestGetNotFound(t *testing.T) {
+	s := db.NewStorage()
+	b := beer.Beer{}
+
+	err := s.Get("non-existent", &b)
+
+	if err == nil {
+		t.Errorf("Error get, expected the record to don't exist")
+	}
+
+	if b.ID != "" {
+		t.Errorf("Error get, expected to don't return a beer")
+	}
+}
+
+func TestDelete(t *testing.T) {
+	mockDB := newMockStorage()
+
+	s := db.OpenStorage(&mockDB)
+
+	err := s.Delete("mock-id")
+
+	_, ok := mockDB["mock-id"]
+
+	if ok {
+		t.Errorf("Error deleting the record: %s", err.Error())
+	}
+}
+
+func TestDeleteNotFound(t *testing.T) {
+	s := db.NewStorage()
+
+	err := s.Delete("non-existent")
+
+	if err == nil {
+		t.Errorf("Error delete, expected the record to don't exist")
 	}
 }
