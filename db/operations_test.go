@@ -24,7 +24,7 @@ func newMockStorage() map[string]beer.Beer {
 }
 
 func TestNewStorage(t *testing.T) {
-	s := db.NewStorage()
+	s := db.NewStorage("str")
 
 	_, ok := s.(db.DB)
 
@@ -46,7 +46,7 @@ func TestNOpenStorage(t *testing.T) {
 
 	bStored := beer.Beer{}
 
-	err := open.Get("mock-id", &bStored)
+	err := open.GetBeer("mock-id", &bStored)
 
 	if err != nil {
 		t.Errorf("The storages doesn't point to the same location")
@@ -57,12 +57,12 @@ func TestNOpenStorage(t *testing.T) {
 	}
 }
 
-func TestCreate(t *testing.T) {
+func TestCreateBeer(t *testing.T) {
 	bMock := mockBeer
 
-	s := db.NewStorage()
+	s := db.NewStorage("str")
 
-	b := s.Create(bMock)
+	b := s.CreateBeer(bMock)
 
 	if b.Desc != b.Desc {
 		t.Errorf("Expected description to be: %s recieved: %s", b.Desc, b.Desc)
@@ -86,24 +86,24 @@ func TestCreate(t *testing.T) {
 
 }
 
-func TestUpdate(t *testing.T) {
+func TestUpdateBeer(t *testing.T) {
 	mockDB := newMockStorage()
 
 	s := db.OpenStorage(&mockDB)
 	b := mockBeer
 
-	err := s.Update("mock-id", b)
+	err := s.UpdateBeer("mock-id", b)
 
 	if err != nil {
 		t.Errorf("Error updating: %s", err.Error())
 	}
 }
 
-func TestUpdateNotFound(t *testing.T) {
-	s := db.NewStorage()
+func TestUpdateBeerNotFound(t *testing.T) {
+	s := db.NewStorage("str")
 	b := mockBeer
 
-	err := s.Update("non-existent", b)
+	err := s.UpdateBeer("non-existent", b)
 
 	if err == nil {
 		t.Errorf("Error updating, expected the record to don't exist")
@@ -116,7 +116,7 @@ func TestGet(t *testing.T) {
 	s := db.OpenStorage(&mockDB)
 	b := beer.Beer{}
 
-	err := s.Get("mock-id", &b)
+	err := s.GetBeer("mock-id", &b)
 
 	if err != nil {
 		t.Errorf("Error getting the record: %s", err.Error())
@@ -129,10 +129,10 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetNotFound(t *testing.T) {
-	s := db.NewStorage()
+	s := db.NewStorage("str")
 	b := beer.Beer{}
 
-	err := s.Get("non-existent", &b)
+	err := s.GetBeer("non-existent", &b)
 
 	if err == nil {
 		t.Errorf("Error get, expected the record to don't exist")
@@ -148,7 +148,7 @@ func TestDelete(t *testing.T) {
 
 	s := db.OpenStorage(&mockDB)
 
-	err := s.Delete("mock-id")
+	err := s.DeleteBeer("mock-id")
 
 	_, ok := mockDB["mock-id"]
 
@@ -158,9 +158,9 @@ func TestDelete(t *testing.T) {
 }
 
 func TestDeleteNotFound(t *testing.T) {
-	s := db.NewStorage()
+	s := db.NewStorage("str")
 
-	err := s.Delete("non-existent")
+	err := s.DeleteBeer("non-existent")
 
 	if err == nil {
 		t.Errorf("Error delete, expected the record to don't exist")

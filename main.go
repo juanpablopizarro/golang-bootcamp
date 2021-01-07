@@ -4,95 +4,117 @@ import (
 	"fmt"
 	"github.com/luciodesimone/golang-bootcamp/beer"
 	"github.com/luciodesimone/golang-bootcamp/db"
+	"os"
 )
 
 func main() {
-	stout := beer.New("Creamy black dense beer with coffee notes, ideal before dinner", 42, 8, 40, 92)
-	bitter := beer.New("dark amber light beer, ideal for summer", 57, 5.5, 10, 63)
-	barley := beer.New("Strong, dense red/dark beer, ideal for late night with friends", 70, 12, 22, 86)
+	// stout := beer.New("Creamy black dense beer with coffee notes, ideal before dinner", 42, 8, 40, 92)
+	// bitter := beer.New("dark amber light beer, ideal for summer", 57, 5.5, 10, 63)
+	// barley := beer.New("Strong, dense red/dark beer, ideal for late night with friends", 70, 12, 22, 86)
+	newB := beer.Beer{}
 
-	s := db.NewStorage()
-
-	st := s.Create(stout)
-	bi := s.Create(bitter)
-	ba := s.Create(barley)
-
-	fmt.Printf("Created: %+v\n", st)
-	fmt.Printf("Created: %+v\n", bi)
-	fmt.Printf("Created: %+v\n", ba)
-
-	gst := beer.Beer{}
-	gbi := beer.Beer{}
-	gba := beer.Beer{}
-	gnf := beer.Beer{}
-
-	err := s.Get(st.ID, &gst)
+	//you must provide a file
+	conn, err := db.Open("bers.json")
 
 	if err != nil {
-		fmt.Printf("Error: %s\n", err)
+		fmt.Printf("Error creating file: %s\n", err)
+		os.Exit(1)
 	}
 
-	err = s.Get(bi.ID, &gbi)
+	err = conn.GetBeer("33664b6b-1f11-4ba3-94eb-5fda506c3b31", &newB)
 
 	if err != nil {
-		fmt.Printf("Error: %s\n", err)
+		fmt.Printf("Error getting beer: %s\n", err)
 	}
 
-	err = s.Get(ba.ID, &gba)
+	fmt.Printf("Beer!: %v\n", newB)
 
-	if err != nil {
-		fmt.Printf("Error: %s\n", err)
-	}
+	defer conn.Close()
 
-	err = s.Get("not-found", &gnf)
+	// conn.CreateBeer(stout)
+	// conn.CreateBeer(bitter)
+	// conn.CreateBeer(barley)
 
-	if err != nil {
-		fmt.Printf("Not found as expected: %s\n", err)
-	}
+	// st := s.Create(stout)
+	// bi := s.Create(bitter)
+	// ba := s.Create(barley)
 
-	fmt.Printf("Found: %+v\n", gst)
-	fmt.Printf("Found: %+v\n", gbi)
-	fmt.Printf("Found: %+v\n", gba)
+	// fmt.Printf("Created: %+v\n", st)
+	// fmt.Printf("Created: %+v\n", bi)
+	// fmt.Printf("Created: %+v\n", ba)
 
-	err = s.Delete(bi.ID)
+	// gst := beer.Beer{}
+	// gbi := beer.Beer{}
+	// gba := beer.Beer{}
+	// gnf := beer.Beer{}
 
-	if err != nil {
-		fmt.Printf("Error: %s\n", err)
-	}
+	// err := s.Get(st.ID, &gst)
 
-	err = s.Delete("not found")
+	// if err != nil {
+	// 	fmt.Printf("Error: %s\n", err)
+	// }
 
-	if err != nil {
-		fmt.Printf("Not found as expected: %s\n", err)
-	}
+	// err = s.Get(bi.ID, &gbi)
 
-	err = s.Get(bi.ID, &gbi)
+	// if err != nil {
+	// 	fmt.Printf("Error: %s\n", err)
+	// }
 
-	if err != nil {
-		fmt.Printf("Deleted as expected: %s\n", err)
-	}
+	// err = s.Get(ba.ID, &gba)
 
-	creamStout := beer.Beer{
-		Desc:        "More creamy less black with coffee notes",
-		IBU:         26,
-		AlcoholCont: 5,
-		SRM:         34,
-		AvgScore:    78,
-	}
+	// if err != nil {
+	// 	fmt.Printf("Error: %s\n", err)
+	// }
 
-	err = s.Update(st.ID, creamStout)
+	// err = s.Get("not-found", &gnf)
 
-	if err != nil {
-		fmt.Printf("Error: %s\n", err.Error())
-	}
+	// if err != nil {
+	// 	fmt.Printf("Not found as expected: %s\n", err)
+	// }
 
-	cs := beer.Beer{}
+	// fmt.Printf("Found: %+v\n", gst)
+	// fmt.Printf("Found: %+v\n", gbi)
+	// fmt.Printf("Found: %+v\n", gba)
 
-	err = s.Get(st.ID, &cs)
+	// err = s.Delete(bi.ID)
 
-	if err != nil {
-		fmt.Printf("Error: %s\n", err.Error())
-	}
+	// if err != nil {
+	// 	fmt.Printf("Error: %s\n", err)
+	// }
 
-	fmt.Printf("Found: %+v\n", cs)
+	// err = s.Delete("not found")
+
+	// if err != nil {
+	// 	fmt.Printf("Not found as expected: %s\n", err)
+	// }
+
+	// err = s.Get(bi.ID, &gbi)
+
+	// if err != nil {
+	// 	fmt.Printf("Deleted as expected: %s\n", err)
+	// }
+
+	// creamStout := beer.Beer{
+	// 	Desc:        "More creamy less black with coffee notes",
+	// 	IBU:         26,
+	// 	AlcoholCont: 5,
+	// 	SRM:         34,
+	// 	AvgScore:    78,
+	// }
+
+	// err = s.Update(st.ID, creamStout)
+
+	// if err != nil {
+	// 	fmt.Printf("Error: %s\n", err.Error())
+	// }
+
+	// cs := beer.Beer{}
+
+	// err = s.Get(st.ID, &cs)
+
+	// if err != nil {
+	// 	fmt.Printf("Error: %s\n", err.Error())
+	// }
+
+	// fmt.Printf("Found: %+v\n", cs)
 }
