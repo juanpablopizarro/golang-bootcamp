@@ -3,13 +3,14 @@ package db_test
 import (
 	"github.com/luciodesimone/golang-bootcamp/beer"
 	"github.com/luciodesimone/golang-bootcamp/db"
+	"os"
+	"reflect"
 	"testing"
 )
 
 //we only use a copy of this variable to prevent data dependency
 //between test cases
 var mockBeer = beer.Beer{
-	ID:          "mock-id",
 	Desc:        "mock-beer-description",
 	AlcoholCont: 5.5,
 	IBU:         90,
@@ -17,52 +18,82 @@ var mockBeer = beer.Beer{
 	AvgScore:    74.2,
 }
 
-func newMockStorage() map[string]beer.Beer {
-	mockDB := make(map[string]beer.Beer)
-	mockDB["mock-id"] = mockBeer
-	return mockDB
+func newMockStorage() (db.DB, string) {
+	f := &os.File{}
+	s := db.New("mock-fname", f)
+	s.CreateBeer(&mockBeer)
+	return s, mockBeer.ID
 }
 
-func TestNewStorage(t *testing.T) {
-	s := db.NewStorage("str")
+func TestReadLocks(t *testing.T) {
+	t.Parallel()
+	newMockStorage()
 
-	_, ok := s.(db.DB)
-
-	if !ok {
-		t.Errorf("A new storage must be a DB interface")
-	}
+	t.Run("Update beer group", func(t *testing.T) {
+		t.Run("Update beer 1", TestUpdateBeerNotFound)
+		t.Run("Update beer 2", TestUpdateBeerNotFound)
+		t.Run("Update beer 3", TestUpdateBeerNotFound)
+	})
 }
 
-func TestNOpenStorage(t *testing.T) {
-	s := newMockStorage()
-	open := db.OpenStorage(&s)
-	b := mockBeer
+func TestWriteLocks(t *testing.T) {
+	t.Parallel()
+	newMockStorage()
 
-	_, ok := s["mock-id"]
+	t.Run("Get beer group", func(t *testing.T) {
+		t.Run("Get beer 1", TestGetBeerNotFound)
+		t.Run("Ger beer 2", TestGetBeerNotFound)
+		t.Run("Ger beer 3", TestGetBeerNotFound)
+	})
+}
 
-	if !ok {
-		t.Errorf("The storage open storage should contain the data that is pointing the mock db")
+func TestDeleteLocks(t *testing.T) {
+	t.Parallel()
+	newMockStorage()
+
+	t.Run("Delete beer group", func(t *testing.T) {
+		t.Run("Delete beer 1", TestDeleteBeerNotFound)
+		t.Run("Delete beer 2", TestDeleteBeerNotFound)
+		t.Run("Delete beer 3", TestDeleteBeerNotFound)
+	})
+}
+
+func TestNew(t *testing.T) {
+	t.Parallel()
+
+	fName := "mock-file-name"
+	mFile := &os.File{}
+
+	s := db.New(fName, mFile)
+
+	if reflect.TypeOf(s.Close).Kind() != reflect.Func {
+		t.Errorf("Expected Close to be defined in the new storage")
 	}
 
-	bStored := beer.Beer{}
-
-	err := open.GetBeer("mock-id", &bStored)
-
-	if err != nil {
-		t.Errorf("The storages doesn't point to the same location")
+	if reflect.TypeOf(s.CreateBeer).Kind() != reflect.Func {
+		t.Errorf("Expected CreateBeer to be defined in the new storage")
 	}
 
-	if bStored != b {
-		t.Errorf("The storages doesn't have the same content")
+	if reflect.TypeOf(s.DeleteBeer).Kind() != reflect.Func {
+		t.Errorf("Expected DeleteBeer to be defined in the new storage")
 	}
+
+	if reflect.TypeOf(s.UpdateBeer).Kind() != reflect.Func {
+		t.Errorf("Expected UpdateBeer to be defined in the new storage")
+	}
+
+	if reflect.TypeOf(s.GetBeer).Kind() != reflect.Func {
+
+	}
+
 }
 
 func TestCreateBeer(t *testing.T) {
+	t.Parallel()
+
 	bMock := mockBeer
-
-	s := db.NewStorage("str")
-
-	b := s.CreateBeer(bMock)
+	s, _ := newMockStorage()
+	b := s.CreateBeer(&bMock)
 
 	if b.Desc != b.Desc {
 		t.Errorf("Expected description to be: %s recieved: %s", b.Desc, b.Desc)
@@ -87,12 +118,10 @@ func TestCreateBeer(t *testing.T) {
 }
 
 func TestUpdateBeer(t *testing.T) {
-	mockDB := newMockStorage()
-
-	s := db.OpenStorage(&mockDB)
+	s, beerId := newMockStorage()
 	b := mockBeer
 
-	err := s.UpdateBeer("mock-id", b)
+	err := s.UpdateBeer(beerId, b)
 
 	if err != nil {
 		t.Errorf("Error updating: %s", err.Error())
@@ -100,7 +129,9 @@ func TestUpdateBeer(t *testing.T) {
 }
 
 func TestUpdateBeerNotFound(t *testing.T) {
-	s := db.NewStorage("str")
+	t.Parallel()
+
+	s, _ := newMockStorage()
 	b := mockBeer
 
 	err := s.UpdateBeer("non-existent", b)
@@ -110,26 +141,27 @@ func TestUpdateBeerNotFound(t *testing.T) {
 	}
 }
 
-func TestGet(t *testing.T) {
-	mockDB := newMockStorage()
+func TestGetBeer(t *testing.T) {
+	s, beerId := newMockStorage()
 
-	s := db.OpenStorage(&mockDB)
 	b := beer.Beer{}
 
-	err := s.GetBeer("mock-id", &b)
+	err := s.GetBeer(beerId, &b)
 
 	if err != nil {
 		t.Errorf("Error getting the record: %s", err.Error())
 	}
 
-	if b.ID != "mock-id" {
-		t.Errorf("Error the record ID getted is incorrect: %s", err.Error())
+	if b.ID != beerId {
+		t.Errorf("Error the record ID getted is incorrect: %s", b.ID)
 	}
 
 }
 
-func TestGetNotFound(t *testing.T) {
-	s := db.NewStorage("str")
+func TestGetBeerNotFound(t *testing.T) {
+	t.Parallel()
+
+	s, _ := newMockStorage()
 	b := beer.Beer{}
 
 	err := s.GetBeer("non-existent", &b)
@@ -143,26 +175,25 @@ func TestGetNotFound(t *testing.T) {
 	}
 }
 
-func TestDelete(t *testing.T) {
-	mockDB := newMockStorage()
+func TestDeleteBeer(t *testing.T) {
+	s, beerId := newMockStorage()
 
-	s := db.OpenStorage(&mockDB)
+	err := s.DeleteBeer(beerId)
 
-	err := s.DeleteBeer("mock-id")
-
-	_, ok := mockDB["mock-id"]
-
-	if ok {
+	if err != nil {
 		t.Errorf("Error deleting the record: %s", err.Error())
 	}
 }
 
-func TestDeleteNotFound(t *testing.T) {
-	s := db.NewStorage("str")
+func TestDeleteBeerNotFound(t *testing.T) {
+	t.Parallel()
 
+	s, _ := newMockStorage()
+
+	//if not found it will return no error
 	err := s.DeleteBeer("non-existent")
 
-	if err == nil {
+	if err != nil {
 		t.Errorf("Error delete, expected the record to don't exist")
 	}
 }

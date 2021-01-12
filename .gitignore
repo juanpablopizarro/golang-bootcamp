@@ -18,3 +18,6 @@
 
 # Database file
 beers.json
+
+# Source code editor
+.vscode
